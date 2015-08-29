@@ -61,6 +61,14 @@ define([], function() {
 			$scope.query.date = date;
 		};
 
+		$scope.selectApi = function(api){
+			$location.search('api',api);
+			$scope.query.page = 1;
+			$location.search('page',$scope.query.page);
+			$scope.query.api = api;
+		};
+
+
 		$scope.selectOrder = function(order){
 			if(order!==$scope.query.order)
 				$scope.query.direction='desc';

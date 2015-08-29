@@ -33,49 +33,13 @@ import service.MongoService;
 //> db.user.find({$and:[{$where:'this.comments.length>4'},{$where:'this.likes.length>4'}]}).pretty()
 public class FacebookCollector {
 
-    public enum FacebookPages {
-        chicorei("162726143745402"),
-        king55style("177679275612961"),
-        mestredalma("160540370633021"),
-        camiseteria("7018060973"),
-        kanuibr("197061883680740");
-
-        public String id;
-        private FacebookPages(String id){
-            this.id = id;
-        }
-        public static List<String> getList() {
-            List<String> tags = new ArrayList<>();
-
-            for (FacebookPages tag : FacebookPages.values()) {
-                tags.add(tag.name());
-            }
-            return tags;
-        }
-        public static FacebookPages getById(String id){
-            for (FacebookPages tag : FacebookPages.values()) {
-                if(tag.id.equals(id))
-                    return tag;
-            }
-            return null;
-        }
-        public static List<String> getListId() {
-            List<String> tags = new ArrayList<>();
-
-            for (FacebookPages tag : FacebookPages.values()) {
-                tags.add(tag.id);
-            }
-            return tags;
-        }
-    }
-
 
     public static String token = Play.application().configuration().getString("facebook.token");
     public static Facebook facebook = new FacebookTemplate(token);
 
 
     public static void collect(CollectorInfo.Moment moment){
-        List<Page> pages = MongoService.getAllPages();
+        List<Page> pages = MongoService.getAllPagesFacebook();
         for(Page page:pages) {
             try {
 

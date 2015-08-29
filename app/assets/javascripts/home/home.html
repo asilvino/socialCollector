@@ -54,6 +54,16 @@
                         <input ng-model="query.date" ng-change="selectDate(query.date)" type="text" class="form-control pull-right" id="daterange"/>
                       </div><!-- /.input group -->
                     </div><!-- /.form group -->
+                      <div class="form-group">
+                          <label>Filtrar por API:</label>
+                          <div class="input-group">
+                              <div class="input-group margin">
+                                  <input ng-model="query.api" ng-click="selectApi(query.api)" type="radio" value="facebook" class="form-control"> Facebook <br/>
+                                  <input ng-model="query.api" ng-click="selectApi(query.api)" type="radio" value="instagram" class="form-control">Instagram <br/>
+                                  <input ng-model="query.api" ng-click="selectApi(query.api)" type="radio" value="" class="form-control">Nenhum <br/>
+                              </div>
+                          </div>
+                      </div><!-- /.form group -->
                     <div class="form-group">
                         <label>Filtrar por palavra chave dos posts:</label>
                         <div class="input-group">

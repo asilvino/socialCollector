@@ -28,10 +28,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import bootstrap.CollectorInfo;
 import bootstrap.DS;
 import models.Page;
 import models.User;
 import play.*;
+import play.libs.Akka;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -47,6 +51,7 @@ public class Application extends Controller {
     public Result getUsers(){
         String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";
         String order = request().getQueryString("order")!=null?request().getQueryString("order"):"likesCount";
+        String api = request().getQueryString("api")!=null&&request().getQueryString("api").equals("")?request().getQueryString("api"):"none";
         String direction = request().getQueryString("direction")!=null?request().getQueryString("direction"):"desc";
         String date = request().getQueryString("date");
         String pagesIds = request().getQueryString("pages");
@@ -57,6 +62,8 @@ public class Application extends Controller {
             int pageInt = Integer.parseInt(page)>=1?Integer.parseInt(page):1;
             Sort.Direction direction1 = Sort.Direction.fromStringOrNull(direction.toUpperCase());
             MongoService.OrderBy orderBy = MongoService.OrderBy.valueOf(order);
+            MongoService.Api apiObject = MongoService.Api.valueOf(api);
+
             List<String> pages = null;
             if(pagesIds!=null&&!pagesIds.equals("")) {
                  pages = Arrays.asList(pagesIds.split(","));
@@ -70,11 +77,11 @@ public class Application extends Controller {
                 initDateTime = f.parseDateTime(dates.get(0).trim());
                 endDateTime = f.parseDateTime(dates.get(1).trim());
             }
-            users = MongoService.getUsers(pageInt, direction1, orderBy,pages,initDateTime,endDateTime,keyword);
-            count  = MongoService.countUsers(direction1, orderBy,pages,initDateTime,endDateTime,keyword);
+            users = MongoService.getUsers(pageInt,apiObject, direction1, orderBy,pages,initDateTime,endDateTime,keyword);
+            count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword);
         }catch (Exception e){
-            users = MongoService.getUsers(1, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
-            count  = MongoService.countUsers(Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
+            users = MongoService.getUsers(1,null, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
+            count  = MongoService.countUsers(null,Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
         }
 
         ObjectNode object =Json.newObject();
@@ -146,6 +153,20 @@ public class Application extends Controller {
         return ok(object);
     }
 
+    public Result instagram(){
+        String code = request().getQueryString("code");
+        if(code!=null){
+            return ok(code);
+//
+//            ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
+//            CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
+//            object.setToken(code);
+//            instance.tell(object,null);
+        }
+
+        return ok();
+    }
+
     @BodyParser.Of(BodyParser.Json.class)
     public Result savePage(){
         JsonNode json = request().body().asJson();
@@ -161,7 +182,7 @@ public class Application extends Controller {
 
         return ok(result);
     }
-    public Result AllPage(){
+    public Result allPage(){
         List<Page> pageList = MongoService.getAllPages();
         return ok(Json.toJson(pageList));
     }
@@ -185,7 +206,7 @@ public class Application extends Controller {
                 Routes.javascriptRouter("jsRoutes"
                         , routes.javascript.Application.getUsers()
                         , routes.javascript.Application.getSingleUser()
-                        , routes.javascript.Application.AllPage()
+                        , routes.javascript.Application.allPage()
                         , routes.javascript.Application.savePage()
                         , routes.javascript.Application.deletePage()
                         //,controllers.routes.javascript.Projects.addGroup()

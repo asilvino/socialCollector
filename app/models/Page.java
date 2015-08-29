@@ -13,9 +13,18 @@ public class Page {
     private String id;
 
     private  String title;
+    private  String api;
 
     public Page(){
 
+    }
+
+    public String getApi() {
+        return api;
+    }
+
+    public void setApi(String api) {
+        this.api = api;
     }
 
     public String getTitle(){

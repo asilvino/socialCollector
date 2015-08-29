@@ -2,13 +2,15 @@ package service;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.jinstagram.entity.comments.CommentData;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 
-import controllers.FacebookCollector;
+import controllers.InstagramCollector;
 import play.Logger;
 
 import bootstrap.DS;
@@ -35,6 +37,19 @@ public class MongoService {
 
     public static List<Page> getAllPages(){
         List<Page> pages = DS.mop.findAll(Page.class);
+        return pages;
+    }
+    public static List<Page> getAllPagesFacebook(){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("api").is(Utils.FacebookPages.class.getName()));
+
+        List<Page> pages = DS.mop.find(query, Page.class);
+        return pages;
+    }
+    public static List<Page> getAllPagesInstagram(){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("api").is(Utils.InstagramPages.class.getName()));
+        List<Page> pages = DS.mop.find(query,Page.class);
         return pages;
     }
 
@@ -76,7 +91,15 @@ public class MongoService {
         }
         return true;
     }
-
+    public static boolean save(CommentData comment){
+        try{
+            DS.mop.save(comment);
+        }catch (Exception e){
+            Logger.error(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
+    }
     public static boolean save(Post post){
         try{
             DS.mop.save(post);
@@ -124,9 +147,18 @@ public class MongoService {
             return null;
         }
     }
+
+    public static void save(MediaFeedData post) {
+        DS.mop.save(post);
+    }
+
     public enum OrderBy{
         likesCount,commentsCount;
     }
+    public enum Api{
+        facebook,instagram,none;
+    }
+
 
     public static List<String> getPostByKeyword(String[] keyword){
         TextCriteria criteria = TextCriteria.forDefaultLanguage()
@@ -137,22 +169,30 @@ public class MongoService {
         return DS.mop.find(query,DBObject.class,"post").stream().map(f->(String)f.get("_id")).collect(Collectors.toList());
     }
 
-    public static List<User> getUsers(int page, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost) {
+    public static List<User> getUsers(int page,Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost) {
         Query query = new Query();
         query.limit(25);
-        query.skip((page-1)*25);
-        if(pages!=null){
+        query.skip((page - 1) * 25);
+        if (pages != null) {
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
-                try{
-                    pagesTitle.add(FacebookCollector.FacebookPages.getById(id).name());
-                }catch (Exception e){
+                try {
+                    pagesTitle.add(Utils.FacebookPages.getById(id).name());
+                } catch (Exception e) {
 
                 }
             }
             query.addCriteria(Criteria.where("pages.title").all(pagesTitle));
-        }else{
-            query.addCriteria(Criteria.where("pages.title").in(FacebookCollector.FacebookPages.getList()));
+        }
+        switch (api){
+            case facebook:
+                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
+                break;
+            case instagram:
+                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
+                break;
+            default:
+                break;
         }
 
         if(initDateTime!=null&&endDateTime!=null&&searchPost!=null) {
@@ -176,21 +216,29 @@ public class MongoService {
         return DS.mop.find(query,User.class);
     }
 
-    public static long countUsers(Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost){
+    public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost){
         Query query = new Query();
         
         if(pages!=null){
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
                 try{
-                    pagesTitle.add(FacebookCollector.FacebookPages.getById(id).name());
+                    pagesTitle.add(Utils.FacebookPages.getById(id).name());
                 }catch (Exception e){
 
                 }
             }
             query.addCriteria(Criteria.where("pages.title").all(pagesTitle));
-        }else{
-            query.addCriteria(Criteria.where("pages.title").in(FacebookCollector.FacebookPages.getList()));
+        }
+        switch (api){
+            case facebook:
+                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
+                break;
+            case instagram:
+                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
+                break;
+            default:
+                break;
         }
 
         if(initDateTime!=null&&endDateTime!=null&&searchPost!=null) {
@@ -236,14 +284,14 @@ public class MongoService {
             List<String> pageIds = new ArrayList<>();
             for (String title : pages) {
                 try{
-                    pageIds.add(FacebookCollector.FacebookPages.valueOf(title).id);
+                    pageIds.add(Utils.FacebookPages.valueOf(title).id);
                 }catch (Exception e){
 
                 }
             }
             query.addCriteria(Criteria.where("from._id").all(pages));
         }else{
-            query.addCriteria(Criteria.where("from._id").in(FacebookCollector.FacebookPages.getListId()));
+            query.addCriteria(Criteria.where("from._id").in(Utils.FacebookPages.getListId()));
         }
         if(initDateTime!=null&&endDateTime!=null){
             query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
@@ -265,7 +313,7 @@ public class MongoService {
             
             query.addCriteria(Criteria.where("from._id").all(pages));
         }else{
-            query.addCriteria(Criteria.where("from._id").in(FacebookCollector.FacebookPages.getListId()));
+            query.addCriteria(Criteria.where("from._id").in(Utils.FacebookPages.getListId()));
         }
         if(initDateTime!=null&&endDateTime!=null){
             query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));

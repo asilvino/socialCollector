@@ -2,6 +2,8 @@ package models;
 
 import com.mongodb.DBObject;
 
+import org.jinstagram.entity.comments.CommentData;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,6 +16,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import controllers.InstagramCollector;
 import play.Logger;
 
 /**
@@ -27,6 +30,7 @@ public class User {
     private String id;
 
     private  String name;
+    private  String username;
 
     public  Set<Like> likes;
     private int likesCount;
@@ -57,6 +61,23 @@ public class User {
         comments = new HashSet<>();
         pages = new HashSet<>();
         pages.add(page);
+    }
+    public User(String id,String name,String username,Page page){
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        likes = new HashSet<>();
+        comments = new HashSet<>();
+        pages = new HashSet<>();
+        pages.add(page);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getLikesCount() {
@@ -90,8 +111,16 @@ public class User {
         comment.likeCount = commentFacebook.getLikeCount()!=null?commentFacebook.getLikeCount().intValue():0;
         comment.attachment = commentFacebook.getAttachment();
         comment.postId = post.getId();
-        comment.createdDate = post.getCreatedTime();
-        comment.updatedDate = post.getUpdatedTime();
+        comment.createdDate = commentFacebook.getCreatedTime();
+        comment.pageId = pageId;
+        this.comments.add(comment);
+    }
+    public void addComment(CommentData commentInstagram, MediaFeedData post, String pageId) {
+        Comment comment = new Comment();
+        comment.commentId = commentInstagram.getId();
+        comment.message = commentInstagram.getText();
+        comment.postId = post.getId();
+        comment.createdDate = new Date(Long.parseLong(commentInstagram.getCreatedTime())*1000);
         comment.pageId = pageId;
         this.comments.add(comment);
     }
@@ -104,7 +133,13 @@ public class User {
         like.pageId = pageId;
         this.likes.add(like);
     }
-
+    public void addLike(MediaFeedData post, String pageId) {
+        Like like = new Like();
+        like.postId = post.getId();
+        like.createdDate = new Date(Long.parseLong(post.getCreatedTime())*1000);
+        like.pageId = pageId;
+        this.likes.add(like);
+    }
     public String getName(){
         return name;
     }
@@ -158,6 +193,9 @@ public class User {
     public String toString(){
         return this.id;
     }
+
+
+
 
     public class Like{
         public String postId;

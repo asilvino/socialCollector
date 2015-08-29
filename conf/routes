@@ -10,7 +10,9 @@ GET     /api/posts                           controllers.Application.getPosts()
 
 GET     /deletepage/:id                           controllers.Application.deletePage(id:String)
 GET     /savepage                           controllers.Application.savePage()
-GET     /api/pages                           controllers.Application.AllPage()
+GET     /api/pages                           controllers.Application.allPage()
+
+GET     /instagram                           controllers.Application.instagram()
 
 GET           /jsroutes.js         controllers.Application.javascriptRoutes()
 

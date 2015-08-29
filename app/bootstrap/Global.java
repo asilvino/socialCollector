@@ -13,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import controllers.FacebookCollector;
+import controllers.InstagramCollector;
 import models.Page;
 import models.User;
+import models.Utils;
 import play.*;
 import play.api.mvc.EssentialFilter;
 import play.filters.csrf.CSRFFilter;
@@ -42,24 +44,26 @@ public class Global extends GlobalSettings {
 
         createIndexForPost();
         ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
+        CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
+        CollectorInfo.CollectorInfoObject objectFacebook = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.FACEBOOK);
 
         Akka.system().scheduler().schedule(
             Duration.create(0, TimeUnit.MILLISECONDS), //Initial delay 0 milliseconds
             Duration.create(30, TimeUnit.DAYS),     //Frequency 30 minutes
             instance,
-            CollectorInfo.Moment.ALL,
+            object,
             Akka.system().dispatcher(),
             null
         );
-
-        Akka.system().scheduler().schedule(
-            Duration.create(40, TimeUnit.HOURS), //Initial delay 0 milliseconds
-            Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
-            instance,
-            CollectorInfo.Moment.RECENT,
-            Akka.system().dispatcher(),
-            null
-        );
+//
+//        Akka.system().scheduler().schedule(
+//            Duration.create(40, TimeUnit.HOURS), //Initial delay 0 milliseconds
+//            Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
+//            instance,
+//            CollectorInfo.Moment.RECENT,
+//            Akka.system().dispatcher(),
+//            null
+//        );
         Logger.info("Application has started");
     }
 
@@ -78,10 +82,18 @@ public class Global extends GlobalSettings {
     }
 
     private void createPages() {
-        for (FacebookCollector.FacebookPages fbpage : FacebookCollector.FacebookPages.values()) {
+        for (Utils.FacebookPages fbpage : Utils.FacebookPages.values()) {
             Page page = new Page();
             page.setId(fbpage.id);
             page.setTitle(fbpage.name());
+            page.setApi(Utils.FacebookPages.class.getName());
+            DS.mop.save(page);
+        }
+        for (Utils.InstagramPages instaPage : Utils.InstagramPages.values()) {
+            Page page = new Page();
+            page.setId(instaPage.id);
+            page.setTitle(instaPage.name());
+            page.setApi(Utils.InstagramPages.class.getName());
             DS.mop.save(page);
         }
 
