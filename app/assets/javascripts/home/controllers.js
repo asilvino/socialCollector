@@ -21,6 +21,7 @@ define([], function() {
 		$scope.query.page = parseInt($location.search().page)||1;
 		$scope.query.pages = $location.search().pages;
 		$scope.query.keyword = $location.search().keyword;
+		$scope.query.api = $location.search().api||'none';
 
 		Pages.query().$promise.then(function(response,error,callBack){
 				if($scope.query.pages){
