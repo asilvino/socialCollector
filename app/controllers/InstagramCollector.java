@@ -5,8 +5,10 @@ import org.jinstagram.auth.model.Token;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.comments.MediaCommentsFeed;
 import org.jinstagram.entity.common.Likes;
+import org.jinstagram.entity.likes.LikesFeed;
 import org.jinstagram.entity.users.feed.MediaFeed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
+import org.jinstagram.exceptions.InstagramException;
 import org.joda.time.DateTime;
 import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.Facebook;
@@ -72,7 +74,7 @@ public class InstagramCollector {
                         Set<User> users = new HashSet<>();
                         Set<CommentData> comments = new HashSet<>();
                         fetchCommentAndUpdateUsers(post, comments, users, page,instagram);
-                        fetchLikesAndUpdateUsers(post, users,page);
+                        fetchLikesAndUpdateUsers(post, users,page,instagram);
 
                         MongoService.save(post);
 
@@ -95,19 +97,25 @@ public class InstagramCollector {
         }
     }
 
-    private static void fetchLikesAndUpdateUsers(MediaFeedData post, Set<User> users,Page page) {
-        Likes likes = post.getLikes();
-        for(org.jinstagram.entity.common.User userLike: likes.getLikesUserList()) {
-            User user = users.stream().filter(f->f.getId().equals(userLike.getId())).findFirst().orElse(new User(userLike.getId(),userLike.getFullName(),userLike.getUserName(),page));
-            user.addLike(post,page.getId());
-            users.add(user);
+    private static void fetchLikesAndUpdateUsers(MediaFeedData post, Set<User> users,Page page,Instagram instagram) {
+        try {
+        LikesFeed likes =  instagram.getUserLikes(post.getId());
+            for(org.jinstagram.entity.common.User userLike: likes.getUserList()) {
+                User user = users.stream().filter(f->f.getId().equals(userLike.getId())).findFirst().orElse(new User(userLike.getId(),userLike.getFullName(),userLike.getUserName(),page));
+                user.addLike(post,page.getId());
+                users.add(user);
+            }
+        } catch (InstagramException e) {
+            e.printStackTrace();
         }
+
 //        post.getExtraData().putIfAbsent("likesCount",totalLikes);
     }
 
     private static void fetchCommentAndUpdateUsers(MediaFeedData post,Set<CommentData> commentsToSave, Set<User> users,Page page,Instagram instagram) {
        try {
            MediaCommentsFeed comments = instagram.getMediaComments(post.getId());
+
            int totalComments = post.getComments().getCount();
 
            for (CommentData comment : post.getComments().getComments()) {
