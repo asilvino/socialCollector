@@ -48,22 +48,22 @@ public class Global extends GlobalSettings {
         CollectorInfo.CollectorInfoObject objectFacebook = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.FACEBOOK);
 
         Akka.system().scheduler().schedule(
-            Duration.create(0, TimeUnit.MILLISECONDS), //Initial delay 0 milliseconds
-            Duration.create(30, TimeUnit.DAYS),     //Frequency 30 minutes
+           Duration.create(0, TimeUnit.MILLISECONDS), //Initial delay 0 milliseconds
+           Duration.create(30, TimeUnit.DAYS),     //Frequency 30 minutes
+           instance,
+           object,
+           Akka.system().dispatcher(),
+           null
+        );
+
+        Akka.system().scheduler().schedule(
+            Duration.create(0, TimeUnit.HOURS), //Initial delay 0 milliseconds
+            Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
             instance,
-            object,
+            objectFacebook,
             Akka.system().dispatcher(),
             null
         );
-//
-//        Akka.system().scheduler().schedule(
-//            Duration.create(40, TimeUnit.HOURS), //Initial delay 0 milliseconds
-//            Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
-//            instance,
-//            CollectorInfo.Moment.RECENT,
-//            Akka.system().dispatcher(),
-//            null
-//        );
         Logger.info("Application has started");
     }
 
