@@ -20,7 +20,7 @@
         <section class="content-header">
           <h1>
             Tabela de Usuários
-            <small>Usuáiros do facebook</small>
+            <small>Usuáiros do {{api[user.api]}}</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="/#/"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -34,9 +34,16 @@
           <div class="row">
             <div class="col-xs-12">
               <div class="box">
-                <div class="box-header">
+                <div ng-show="api[user.api]==='facebook'" class="box-header">
                   <img ng-src="http://graph.facebook.com/{{user.id}}/picture?type=square" alt="profile"/>
                   <a ng-href="http://facebook.com/{{user.id}}">
+                    <h3 class="box-title" ng-bind="user.name"></h3>
+                  </a>
+                  <br/>
+                </div><!-- /.box-header -->
+                <div ng-show="api[user.api]==='instagram'" class="box-header">
+                  <img ng-src="{{user.profilePic}}" alt="profile"/>
+                  <a ng-href="http://instagram.com/{{user.username}}">
                     <h3 class="box-title" ng-bind="user.name"></h3>
                   </a>
                   <br/>
@@ -53,12 +60,12 @@
                     <li ng-repeat="page in user.pages">
                         <!-- timeline icon -->
                         <i class="fa fa-group  bg-purple"></i>
-                        <div class="timeline-item">
+                        <div  class="timeline-item">
                             <h3 class="timeline-header">
-                              <a ng-href="http://facebook.com/{{page.id}}" target="_blank">{{page.title}}</a>
+                              <a  ng-href="apiUrl[page.api]{{page.title}}" target="_blank">{{page.title}}</a>
                             </h3>
                             <div class='timeline-footer'>
-                                <a ng-href="http://facebook.com/{{page.id}}" target="_blank">http://facebook.com/{{page.id}}</a>
+                                <a ng-href="apiUrl[page.api]{{page.title}}" target="_blank">apiUrl[page.api]{{page.title}}</a>
                             </div>
                         </div>
                         <br/>
@@ -83,16 +90,20 @@
                                   <span class="time"><i class="fa fa-clock-o"></i> {{comment.createdDate| date:'dd/MM/yyyy HH:mm:ss Z'}}</span>
 
                                  
-                                  <h3 class="timeline-header"><a ng-href="http://facebook.com/{{comment.postId}}" target="_blank">Link Commentario</a> ...</h3>
+                                  <h3 class="timeline-header">
+                                    <a ng-show="!comment.link" ng-href="http://facebook.com/{{comment.postId}}" target="_blank">Link Commentario</a> 
+                                    <a ng-show="comment.link" ng-href="{{comment.link}}" target="_blank">Link Commentario</a>...
+                                  </h3>
 
                                   <div class="timeline-body">
-                                  <a class="btn btn-primary btn-xs" ng-href="http://facebook.com/{{comment.postId}}">Likes:{{comment.likeCount}}</a>
+                                  <a ng-show="!comment.link" class="btn btn-primary btn-xs" ng-href="http://facebook.com/{{comment.postId}}">Likes:{{comment.likeCount}}</a>
+                                  <img ng-show="comment.imageLink" class="btn btn-primary btn-xs" ng-src="{{imageLink}}"/>
                                       {{comment.message}}
                                   </div>
 
                                   <div class='timeline-footer'>
                                   Página:  
-                                      <a class="btn btn-primary btn-xs" ng-href="http://facebook.com/{{comment.pageId}}">{{comment.pageId}}</a>
+                                      <a class="btn btn-primary btn-xs"  ng-href="apiUrl[user.api]{{comment.pageId}}">{{comment.pageId}}</a>
                                   </div>
                               </div>
                           </li>
@@ -118,15 +129,19 @@
                               <div class="timeline-item">
                                   <span class="time"><i class="fa fa-clock-o"></i> {{like.createdDate| date:'dd/MM/yyyy HH:mm:ss Z'}}</span>
 
-                                  <h3 class="timeline-header"><a ng-href="http://facebook.com/{{like.postId}}" target="_blank">Link Post</a> ...</h3>
+                                  <h3 class="timeline-header">
+                                    <a ng-show="!like.link" ng-href="http://facebook.com/{{like.postId}}" target="_blank">Link Post</a> ...
+                                    <a ng-show="like.link" ng-href="{{like.link}}" target="_blank">Link Post</a>
+                                  </h3>
 
                                   <div class="timeline-body">
-                                   <a ng-href="http://facebook.com/{{like.postId}}" target="_blank">http://facebook.com/{{like.postId}}</a>
+                                   <a ng-show="!like.link" ng-href="http://facebook.com/{{like.postId}}" target="_blank">http://facebook.com/{{like.postId}}</a>
+                                   <img ng-show="comment.imageLink" class="btn btn-primary btn-xs" ng-src="{{imageLink}}"/>
                                   </div>
 
                                   <div class='timeline-footer'>
                                   Página:
-                                      <a class="btn bg-maroon btn-xs" ng-href="http://facebook.com/{{like.postId}}">{{like.pageId}}</a>
+                                      <a class="btn bg-maroon btn-xs" ng-href="apiUrl[user.api]{{like.pageId}}">{{like.pageId}}</a>
                                   </div>
                               </div>
                           </li>

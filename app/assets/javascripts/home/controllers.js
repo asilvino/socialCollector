@@ -7,6 +7,13 @@ define([], function() {
 	/** Controls the index page */
 	var HomeCtrl = function($scope, $rootScope, $location, helper,UserSearch,Pages) {
 		$rootScope.pageTitle = 'Welcome';
+		$scope.api={};
+		$scope.api['models.Utils$FacebookPages']='facebook';
+		$scope.api['models.Utils$InstagramPages']='instagram';
+		$scope.apiUrl={};
+		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
+		$scope.apiUrl['models.Utils$InstagramPages']='http://instagram.com/';
+
 		$scope.users=[];
 		$scope.pages = [];
 		$scope.query = {};
