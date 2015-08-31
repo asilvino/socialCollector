@@ -186,10 +186,10 @@ public class MongoService {
         }
         switch (api){
             case facebook:
-                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
+                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
                 break;
             case instagram:
-                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
+                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
                 break;
             default:
                 break;
@@ -232,10 +232,10 @@ public class MongoService {
         }
         switch (api){
             case facebook:
-                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
+                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
                 break;
             case instagram:
-                query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
+                query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
                 break;
             default:
                 break;

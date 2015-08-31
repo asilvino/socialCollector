@@ -31,6 +31,8 @@ public class User {
 
     private  String name;
     private  String username;
+    private  String api;
+    private  String profilePic;
 
     public  Set<Like> likes;
     private int likesCount;
@@ -57,19 +59,38 @@ public class User {
     public User(String id,String name,Page page){
         this.id = id;
         this.name = name;
+        this.api = page.getApi();
         likes = new HashSet<>();
         comments = new HashSet<>();
         pages = new HashSet<>();
         pages.add(page);
     }
-    public User(String id,String name,String username,Page page){
+    public User(String id,String name,String username,String profilePic,Page page){
         this.id = id;
         this.name = name;
         this.username = username;
+        this.profilePic = profilePic;
+        this.api = page.getApi();
         likes = new HashSet<>();
         comments = new HashSet<>();
         pages = new HashSet<>();
         pages.add(page);
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public String getApi() {
+        return api;
+    }
+
+    public void setApi(String api) {
+        this.api = api;
     }
 
     public String getUsername() {
@@ -122,6 +143,8 @@ public class User {
         comment.postId = post.getId();
         comment.createdDate = new Date(Long.parseLong(commentInstagram.getCreatedTime())*1000);
         comment.pageId = pageId;
+        comment.link = post.getLink();
+        comment.imageLink =  post.getImages().getStandardResolution().getImageUrl();
         this.comments.add(comment);
     }
 
@@ -138,6 +161,8 @@ public class User {
         like.postId = post.getId();
         like.createdDate = new Date(Long.parseLong(post.getCreatedTime())*1000);
         like.pageId = pageId;
+        like.imageLink =  post.getImages().getStandardResolution().getImageUrl();
+        like.link = post.getLink();
         this.likes.add(like);
     }
     public String getName(){
@@ -200,6 +225,8 @@ public class User {
     public class Like{
         public String postId;
         public String pageId;
+        public String link;
+        public String imageLink;
         public Date createdDate;
         public Date updatedDate;
         public Like(){
@@ -221,6 +248,8 @@ public class User {
         public String commentId;
         public String message;
         public int likeCount;
+        public String link;
+        public String imageLink;
         public String pageId;
         public Date createdDate;
         public Date updatedDate;
