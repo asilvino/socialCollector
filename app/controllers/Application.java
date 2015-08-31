@@ -51,7 +51,7 @@ public class Application extends Controller {
     public Result getUsers(){
         String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";
         String order = request().getQueryString("order")!=null?request().getQueryString("order"):"likesCount";
-        String api = request().getQueryString("api")!=null&&request().getQueryString("api").equals("")?request().getQueryString("api"):"none";
+        String api = request().getQueryString("api")!=null&&!request().getQueryString("api").equals("")?request().getQueryString("api"):"none";
         String direction = request().getQueryString("direction")!=null?request().getQueryString("direction"):"desc";
         String date = request().getQueryString("date");
         String pagesIds = request().getQueryString("pages");

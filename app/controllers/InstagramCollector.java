@@ -101,8 +101,8 @@ public class InstagramCollector {
         try {
         LikesFeed likes =  instagram.getUserLikes(post.getId());
             for(org.jinstagram.entity.common.User userLike: likes.getUserList()) {
-                User user = users.stream().filter(f->f.getId().equals(userLike.getId())).findFirst().orElse(new User(userLike.getId(),userLike.getFullName(),userLike.getUserName(),page));
-                user.addLike(post,page.getId());
+                User user = users.stream().filter(f->f.getId().equals(userLike.getId())).findFirst().orElse(new User(userLike.getId(),userLike.getFullName(),userLike.getUserName(),userLike.getProfilePictureUrl(),page));
+                user.addLike(post,page.getTitle());
                 users.add(user);
             }
         } catch (InstagramException e) {
@@ -120,8 +120,8 @@ public class InstagramCollector {
 
            for (CommentData comment : post.getComments().getComments()) {
 
-               User user = users.stream().filter(f -> f.getId().equals(comment.getCommentFrom().getId())).findFirst().orElse(new User(comment.getCommentFrom().getId(), comment.getCommentFrom().getFullName(),comment.getCommentFrom().getUsername(), page));
-               user.addComment(comment, post, page.getId());
+               User user = users.stream().filter(f -> f.getId().equals(comment.getCommentFrom().getId())).findFirst().orElse(new User(comment.getCommentFrom().getId(), comment.getCommentFrom().getFullName(),comment.getCommentFrom().getUsername(),comment.getCommentFrom().getProfilePicture(), page));
+               user.addComment(comment, post, page.getTitle());
                users.add(user);
 
                commentsToSave.add(comment);
