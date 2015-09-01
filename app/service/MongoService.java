@@ -24,6 +24,7 @@ import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.Post;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -102,7 +103,21 @@ public class MongoService {
     }
     public static boolean save(Post post){
         try{
-            DS.mop.save(post);
+            models.Post postConvert = new models.Post();
+            postConvert.setApi(Utils.FacebookPages.class.getName());
+            postConvert.setCommentsCount((Integer) post.getExtraData().getOrDefault("commentsCount", 0));
+            postConvert.setCreatedTime(post.getCreatedTime());
+            postConvert.setFrom(post.getFrom().getId());
+            postConvert.setFromName(post.getFrom().getName());
+            postConvert.setId(post.getId());
+            postConvert.setLikesCount((Integer) post.getExtraData().getOrDefault("likesCount", 0));
+            postConvert.setLink(post.getLink());
+            postConvert.setMessage(post.getMessage());
+            postConvert.setName(post.getName());
+            postConvert.setShareCount(post.getShares());
+            postConvert.setUpdatedTime(post.getUpdatedTime());
+
+            DS.mop.save(postConvert);
         }catch (Exception e){
             Logger.error(e.getLocalizedMessage());
             return false;
@@ -148,8 +163,27 @@ public class MongoService {
         }
     }
 
-    public static void save(MediaFeedData post) {
-        DS.mop.save(post);
+    public static boolean save(MediaFeedData post) {
+        try{
+            models.Post postConvert = new models.Post();
+            postConvert.setApi(Utils.InstagramPages.class.getName());
+            postConvert.setCommentsCount(post.getComments().getCount());
+            postConvert.setCreatedTime(new Date(Long.parseLong(post.getCreatedTime()) * 1000));
+            postConvert.setFrom(post.getCaption().getFrom().getId());
+            postConvert.setFromName(post.getCaption().getFrom().getUsername());
+            postConvert.setId(post.getId());
+            postConvert.setLikesCount(post.getLikes().getCount());
+            postConvert.setLink(post.getLink());
+            postConvert.setMessage(post.getCaption().getText());
+            postConvert.setName(post.getTags().toString());
+            postConvert.setUpdatedTime(new Date(Long.parseLong(post.getCreatedTime()) * 1000));
+
+            DS.mop.save(postConvert);
+        }catch (Exception e){
+            Logger.error(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }
 
     public enum OrderBy{
@@ -272,13 +306,8 @@ public class MongoService {
         }
 
         query.limit(25);
-        query.skip((page-1)*25);
-        query.with(new Sort(direction,"extraData."+order.name()));
-        query.fields().exclude("actions");
-        query.fields().exclude("privacy");
-        query.fields().exclude("properties");
-        query.fields().exclude("extraData.likes");
-        query.fields().exclude("extraData.comments");
+        query.skip((page - 1) * 25);
+        query.with(new Sort(direction, order.name()));
 
         if(pages!=null){
             List<String> pageIds = new ArrayList<>();
@@ -289,9 +318,9 @@ public class MongoService {
 
                 }
             }
-            query.addCriteria(Criteria.where("from._id").all(pages));
+            query.addCriteria(Criteria.where("from").all(pages));
         }else{
-            query.addCriteria(Criteria.where("from._id").in(Utils.FacebookPages.getListId()));
+            query.addCriteria(Criteria.where("from").in(Utils.FacebookPages.getListId()));
         }
         if(initDateTime!=null&&endDateTime!=null){
             query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
@@ -308,12 +337,12 @@ public class MongoService {
             query = TextQuery.queryText(criteria)
                     .sortByScore();
         }
-        query.with(new Sort(direction,"extraData."+order.name()));
+        query.with(new Sort(direction,order.name()));
         if(pages!=null){
             
-            query.addCriteria(Criteria.where("from._id").all(pages));
+            query.addCriteria(Criteria.where("from").all(pages));
         }else{
-            query.addCriteria(Criteria.where("from._id").in(Utils.FacebookPages.getListId()));
+            query.addCriteria(Criteria.where("from").in(Utils.FacebookPages.getListId()));
         }
         if(initDateTime!=null&&endDateTime!=null){
             query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
