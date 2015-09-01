@@ -252,7 +252,6 @@ public class User {
         public String imageLink;
         public String pageId;
         public Date createdDate;
-        public Date updatedDate;
         public StoryAttachment attachment;
 
         public Comment(){
