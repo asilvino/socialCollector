@@ -10,9 +10,7 @@ define([], function() {
 		$scope.api={};
 		$scope.api['models.Utils$FacebookPages']='facebook';
 		$scope.api['models.Utils$InstagramPages']='instagram';
-		$scope.apiUrl={};
-		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
-		$scope.apiUrl['models.Utils$InstagramPages']='http://instagram.com/';
+		
 
 		$scope.users=[];
 		$scope.pages = [];
@@ -214,7 +212,12 @@ define([], function() {
 	var UserCtrl = function($scope, UserSearch, helper, $location,$routeParams) {
 		// Wrap the current user from the service in a watch expression
 		$scope.user = {};
-
+		$scope.apiUrl={};
+		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
+		$scope.apiUrl['models.Utils$InstagramPages']='http://instagram.com/';
+		$scope.api={};
+		$scope.api['models.Utils$FacebookPages']='facebook';
+		$scope.api['models.Utils$InstagramPages']='instagram';
 		$scope.getUser = function() {
 			if($routeParams.userId){
 				UserSearch.get({id:$routeParams.userId}).$promise.then(function(response,error,callBack){

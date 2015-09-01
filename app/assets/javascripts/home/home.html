@@ -39,10 +39,10 @@
                 <div class="form-group">
                   <div class="box-body">
                     <label>
-                        Facebook Pages: <br/>
+                        Social Pages: <br/>
                         <select chosen data-placeholder="Choose a Page"
                          no-results-text="'Could not find any page :('"
-                         style="width:350px;" multiple class="chosen-select" ng-model="query.pages" ng-change="selectPages(query.pages)" ng-options="page.title for page in pages">
+                         style="width:350px;" multiple class="chosen-select" ng-model="query.pages" ng-change="selectPages(query.pages)" ng-options=" (page.title+'-'+api[page.api])  for page in pages">
                         </select>
                     </label>
                     <div class="form-group">
