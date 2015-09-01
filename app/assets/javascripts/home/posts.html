@@ -39,10 +39,10 @@
                 <div class="form-group">
                   <div class="box-body">
                     <label>
-                        Facebook Pages: <br/>
+                        Social Pages: <br/>
                         <select chosen data-placeholder="Choose a Page"
                          no-results-text="'Could not find any page :('"
-                         style="width:350px;" class="chosen-select" ng-model="query.pages" ng-change="selectPages(query.pages)" ng-options="page.title for page in pages">
+                         style="width:350px;" multiple class="chosen-select" ng-model="query.pages" ng-change="selectPages(query.pages)" ng-options=" (page.title+'-'+api[page.api])  for page in pages">
                         </select>
                     </label>
                     <div class="form-group">
@@ -93,14 +93,14 @@
                     <tbody>
                       <tr ng-repeat="post in posts">
                           <td > 
-                            <a ng-href="http://facebook.com/{{post.objectId||post._id}}" target="_blank">{{post.objectId||post._id}}</a>
+                            <a ng-href="post.link" target="_blank">{{post._id}}</a>
                           </td>
                           <td ng-bind="post.message">
                           </td>
-                          <td ng-bind="post.extraData.likesCount"></td>
-                          <td ng-bind="post.extraData.commentsCount"></td>
+                          <td ng-bind="post.likesCount"></td>
+                          <td ng-bind="post.commentsCount"></td>
                           <td ng-bind="post.createdTime| date:'dd/MM/yyyy HH:mm:ss Z'"></td>
-                          <td ng-bind="post.from.name"></td>
+                          <td ng-bind="post.fromName+'-'+api[post.api]"></td>
                       </tr>
                     </tbody>
                     <tfoot>

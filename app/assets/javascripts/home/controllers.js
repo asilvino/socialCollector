@@ -106,6 +106,9 @@ define([], function() {
 	/** Controls the index page */
 	var PostCtrl = function($scope, $rootScope, $location, helper,UserSearch,Post,Pages) {
 		$rootScope.pageTitle = 'Welcome';
+		$scope.api={};
+		$scope.api['models.Utils$FacebookPages']='facebook';
+		$scope.api['models.Utils$InstagramPages']='instagram';
 		$scope.posts=[];
 		$scope.pages = [];
 		$scope.query = {};
