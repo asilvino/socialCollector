@@ -77,7 +77,8 @@ public class FacebookCollector {
                         MongoService.save(post);
 
                         for(Comment comment: comments){
-                            MongoService.save(comment);
+
+                            MongoService.save(comment,page,post.getId());
                         }
                         //save or update users iterations
                         MongoService.save(users);
@@ -91,6 +92,8 @@ public class FacebookCollector {
 
             }catch (Exception e){
                 Logger.debug("error on page:"+page.getId());
+                Logger.error("error on page:"+e.getMessage());
+                Logger.error("Token: "+token);
             }
         }
     }

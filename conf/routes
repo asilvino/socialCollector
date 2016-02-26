@@ -6,6 +6,8 @@
 GET     /                           controllers.Application.index()
 GET     /api/users                           controllers.Application.getUsers()
 GET     /api/users/:id                           controllers.Application.getSingleUser(id:String)
+GET     /api/users/words/:id                           controllers.Application.getUserWords(id:String)
+GET     /api/pages/words                          controllers.Application.getPagesWords()
 GET     /api/posts                           controllers.Application.getPosts()
 
 GET     /deletepage/:id                           controllers.Application.deletePage(id:String)

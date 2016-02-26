@@ -26,6 +26,7 @@ define([], function() {
 		$scope.query.page = parseInt($location.search().page)||1;
 		$scope.query.pages = $location.search().pages;
 		$scope.query.keyword = $location.search().keyword;
+		$scope.query.name = $location.search().name;
 		$scope.query.api = $location.search().api||'none';
 
 		Pages.query().$promise.then(function(response,error,callBack){
@@ -93,6 +94,12 @@ define([], function() {
         $scope.addkeyword = function(keyword){
             $scope.query.keyword = keyword;
             $location.search('keyword',$scope.query.keyword);
+            $scope.query.page = 1;
+            $location.search('page',$scope.query.page);
+        };
+        $scope.addName = function(name){
+            $scope.query.name = name;
+            $location.search('name',$scope.query.name);
             $scope.query.page = 1;
             $location.search('page',$scope.query.page);
         };
@@ -234,6 +241,81 @@ define([], function() {
 	};
 	UserCtrl.$inject = ['$scope', 'UserSearch', 'helper', '$location','$routeParams'];
 
+	/** Controls the Single User Words page */
+	var UserWordsCtrl = function($scope, UserSearch, helper, $location,$routeParams,WordsUser) {
+		// Wrap the current user from the service in a watch expression
+		$scope.user = {};
+		$scope.apiUrl={};
+		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
+		$scope.apiUrl['models.Utils$InstagramPages']='http://instagram.com/';
+		$scope.api={};
+		$scope.api['models.Utils$FacebookPages']='facebook';
+		$scope.api['models.Utils$InstagramPages']='instagram';
+		$scope.query = {}
+		$scope.query.date = $location.search().date||'';
+		$scope.selectDate = function(date){
+			$location.search('date',date);
+			$scope.query.date = date;
+		};
+		$scope.updateTable = function(){
+			$scope.query.id = $routeParams.userId;
+			WordsUser.get($scope.query).$promise.then(function(response,error,callBack){
+				$scope.wordsPosts = response.posts;
+				$scope.wordsComments = response.comments;
+				$scope.totalPosts = Object.keys(wordsPosts).length
+				$scope.totalComments = Object.keys(wordsComments).length
+			},function(reason){
+				console.log(reason);
+			});
+		};
+	};
+	UserWordsCtrl.$inject = ['$scope', 'UserSearch', 'helper', '$location','$routeParams','WordsUser'];
+
+	/** Controls the FB/INSTA - Pages Words page */
+	var PagesWordsCtrl = function($scope, UserSearch, helper, $location,$routeParams,WordsPages,Pages) {
+		// Wrap the current user from the service in a watch expression
+		$scope.user = {};
+		$scope.apiUrl={};
+		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
+		$scope.apiUrl['models.Utils$InstagramPages']='http://instagram.com/';
+		$scope.api={};
+		$scope.api['models.Utils$FacebookPages']='facebook';
+		$scope.api['models.Utils$InstagramPages']='instagram';
+		$scope.query = {}
+		$scope.query.date = $location.search().date||'';
+		$scope.query.pages = $location.search().pages;
+		$scope.selectDate = function(date){
+			$location.search('date',date);
+			$scope.query.date = date;
+		};
+		$scope.selectPages = function(pages){
+			var pagesIds = pages.map(function(page){return page.id;}).toString();
+			$location.search('pages',pagesIds);
+		};
+		Pages.query().$promise.then(function(response,error,callBack){
+			if($scope.query.pages){
+				$scope.query.pages = response.filter(function(res){return $scope.query.pages.indexOf(res.id)>-1;});
+			}else{
+				$scope.query.pages=[];
+			}
+			$scope.pages = response;
+		},function(reason){
+			console.log(reason);
+		});
+		
+		$scope.updateTable = function(){
+			WordsPages.query($location.search()).$promise.then(function(response,error,callBack){
+				$scope.wordsPosts = response.posts;
+				$scope.wordsComments = response.comments;
+				$scope.totalPosts = Object.keys(wordsPosts).length
+				$scope.totalComments = Object.keys(wordsComments).length
+			},function(reason){
+				console.log(reason);
+			});
+		};
+	};
+	PagesWordsCtrl.$inject = ['$scope', 'UserSearch', 'helper', '$location','$routeParams','WordsPages','Pages'];
+
 	/** Controls the footer */
 	var FooterCtrl = function(/*$scope*/) {
 	};
@@ -244,7 +326,8 @@ define([], function() {
 		FooterCtrl: FooterCtrl,
 		HomeCtrl: HomeCtrl,
 		UserCtrl:UserCtrl,
-		PostCtrl:PostCtrl
+		PostCtrl:PostCtrl,
+		UserWordsCtrl:UserWordsCtrl
 	};
 
 });

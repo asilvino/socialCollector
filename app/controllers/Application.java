@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import akka.actor.ActorRef;
@@ -46,6 +47,7 @@ public class Application extends Controller {
 
 
     public Result index() {
+       
         return ok(index.render("Your new application is ready."));
     }
     public Result getUsers(){
@@ -54,6 +56,7 @@ public class Application extends Controller {
         String api = request().getQueryString("api")!=null&&!request().getQueryString("api").equals("")?request().getQueryString("api"):"none";
         String direction = request().getQueryString("direction")!=null?request().getQueryString("direction"):"desc";
         String date = request().getQueryString("date");
+        String name = request().getQueryString("name");
         String pagesIds = request().getQueryString("pages");
         String[] keyword = request().getQueryString("keyword")!=null&&!request().getQueryString("keyword").equals("")?request().getQueryString("keyword").split(" "):null;
         List<User> users ;
@@ -77,11 +80,11 @@ public class Application extends Controller {
                 initDateTime = f.parseDateTime(dates.get(0).trim());
                 endDateTime = f.parseDateTime(dates.get(1).trim());
             }
-            users = MongoService.getUsers(pageInt,apiObject, direction1, orderBy,pages,initDateTime,endDateTime,keyword);
-            count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword);
+            users = MongoService.getUsers(pageInt,apiObject, direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
+            count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
         }catch (Exception e){
-            users = MongoService.getUsers(1,null, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
-            count  = MongoService.countUsers(null,Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null);
+            users = MongoService.getUsers(1,null, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
+            count  = MongoService.countUsers(null,Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
         }
 
         ObjectNode object =Json.newObject();
@@ -113,6 +116,60 @@ public class Application extends Controller {
         }
         return ok(Json.toJson(user));
     }
+    public Result getUserWords(String id){
+        String date = request().getQueryString("date");
+        DateTime initDateTime = null;
+        DateTime endDateTime = null;
+
+        if(date!=null&&!date.equals("")) {
+            List<String> dates= Arrays.asList(date.trim().split("-"));
+            DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy");
+            initDateTime = f.parseDateTime(dates.get(0).trim());
+            endDateTime = f.parseDateTime(dates.get(1).trim());
+        }
+        
+
+        Map<String, Float> posts = MongoService.countWordsUserPosts(id,initDateTime,endDateTime);
+        Map<String, Float> comments = MongoService.countWordsUserComments(id,initDateTime,endDateTime);
+        if(posts!=null){
+
+            Logger.debug(posts.toString());
+        }
+        if(comments!=null){
+            Logger.debug(comments.toString());
+        }
+        ObjectNode object =Json.newObject();
+        object.put("posts",Json.toJson(posts));
+        object.put("comments",Json.toJson(comments));
+        return ok(object);
+    }
+
+    public Result getPagesWords(){
+        User user = null;
+        String pagesIds = request().getQueryString("pages");
+        String date = request().getQueryString("date");
+        DateTime initDateTime = null;
+        DateTime endDateTime = null;
+        List<String> pages = null;
+
+        if(pagesIds!=null&&!pagesIds.equals("")) {
+            pages = Arrays.asList(pagesIds.split(","));
+        }
+        if(date!=null&&!date.equals("")) {
+            List<String> dates= Arrays.asList(date.trim().split("-"));
+            DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy");
+            initDateTime = f.parseDateTime(dates.get(0).trim());
+            endDateTime = f.parseDateTime(dates.get(1).trim());
+        }
+
+        Map<String, Float> posts = MongoService.countWordsPagesComments(pages,initDateTime,endDateTime);
+        Map<String, Float> comments = MongoService.countWordsPagesPosts(pages,initDateTime,endDateTime);
+        ObjectNode object =Json.newObject();
+        object.put("posts",Json.toJson(posts));
+        object.put("comments",Json.toJson(comments));
+        return ok(object);
+    }
+    
 
     public Result getPosts(){
         String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";

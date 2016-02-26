@@ -9,18 +9,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
-
+import org.springframework.data.mongodb.core.mapreduce.MapReduceOptions;
+import  org.springframework.data.mongodb.core.script.*;
 import controllers.InstagramCollector;
 import play.Logger;
 
 import bootstrap.DS;
 import models.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.Post;
 
 import java.util.ArrayList;
@@ -28,6 +29,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.*;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Comparator;
+
+import java.util.Map;
+import java.util.Map.*;
+
 import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -35,6 +45,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
  * Created by alvaro.joao.silvino on 20/08/2015.
  */
 public class MongoService {
+    final static String stopWords = "1 2 3 4 5 6 7 8 9 0 de a o que e do da em um para é com não uma os no se na por mais as dos como mas foi ao ele das tem à seu sua ou ser quando muito há nos já está eu também só pelo pela até isso ela entre era depois sem mesmo aos ter seus quem nas me esse eles estão você tinha foram essa num nem suas meu às minha têm numa pelos elas havia seja qual será nós tenho lhe deles essas esses pelas este fosse dele tu te vocês vos lhes meus minhas teu tua teus tuas nosso nossa nossos nossas dela delas esta estes estas aquele aquela aqueles aquelas isto aquilo estou está estamos estão estive esteve estivemos estiveram estava estávamos estavam estivera estivéramos esteja estejamos estejam estivesse estivéssemos estivessem estiver estivermos estiverem hei há havemos hão houve houvemos houveram houvera houvéramos haja hajamos hajam houvesse houvéssemos houvessem houver houvermos houverem houverei houverá houveremos houverão houveria houveríamos houveriam sou somos são era éramos eram fui foi fomos foram fora fôramos seja sejamos sejam fosse fôssemos fossem for formos forem serei será seremos serão seria seríamos seriam tenho tem temos tém tinha tínhamos tinham tive teve tivemos tiveram tivera tivéramos tenha tenhamos tenham tivesse tivéssemos tivessem tiver tivermos tiverem terei terá teremos terão teria teríamos teriam para ;) pra aqui lá";
 
     public static List<Page> getAllPages(){
         List<Page> pages = DS.mop.findAll(Page.class);
@@ -57,6 +68,7 @@ public class MongoService {
     public static User getUserById(String id){
         return DS.mop.findById(id,User.class);
     }
+
 
     public static boolean save(Set<User> users){
         try{
@@ -83,11 +95,12 @@ public class MongoService {
         return true;
     }
 
-    public static boolean save(Comment comment){
+    public static boolean save(org.springframework.social.facebook.api.Comment comment,Page page,String postId){
         try{
-            DS.mop.save(comment);
+            Comment commentModel = new Comment(comment,page,postId);
+            DS.mop.save(commentModel);
         }catch (Exception e){
-            Logger.error(e.getLocalizedMessage());
+            Logger.error("Error in save Comment:" + e.getMessage());
             return false;
         }
         return true;
@@ -203,7 +216,7 @@ public class MongoService {
         return DS.mop.find(query,DBObject.class,"post").stream().map(f->(String)f.get("_id")).collect(Collectors.toList());
     }
 
-    public static List<User> getUsers(int page,Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost) {
+    public static List<User> getUsers(int page,Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name) {
         Query query = new Query();
         query.limit(25);
         query.skip((page - 1) * 25);
@@ -217,6 +230,9 @@ public class MongoService {
                 }
             }
             query.addCriteria(Criteria.where("pages.title").all(pagesTitle));
+        }
+        if(name != null){
+            query.addCriteria(Criteria.where("name").regex(name));
         }
         switch (api){
             case facebook:
@@ -250,7 +266,7 @@ public class MongoService {
         return DS.mop.find(query,User.class);
     }
 
-    public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost){
+    public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name){
         Query query = new Query();
         
         if(pages!=null){
@@ -263,6 +279,9 @@ public class MongoService {
                 }
             }
             query.addCriteria(Criteria.where("pages.title").all(pagesTitle));
+        }
+        if(name != null){
+            query.addCriteria(Criteria.where("name").regex(name));
         }
         switch (api){
             case facebook:
@@ -310,14 +329,7 @@ public class MongoService {
         query.with(new Sort(direction, order.name()));
 
         if(pages!=null){
-            List<String> pageIds = new ArrayList<>();
-            for (String title : pages) {
-                try{
-                    pageIds.add(Utils.FacebookPages.valueOf(title).id);
-                }catch (Exception e){
-
-                }
-            }
+            
             query.addCriteria(Criteria.where("from").all(pages));
         }else{
             query.addCriteria(Criteria.where("from").in(Utils.FacebookPages.getListId()));
@@ -348,5 +360,145 @@ public class MongoService {
             query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
         }
         return DS.mop.count(query,Post.class);
+    }
+    
+    public static Map<String, Float> countWordsPagesPosts(List<String> pages,DateTime initDateTime,DateTime endDateTime) {
+        String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
+        String mapFunction = "function() {      var message = this.message;    if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    }}";
+        String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
+        ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
+
+        Map<String, Object> scopeVariables = new HashMap<String, Object>();
+        scopeVariables.put("stopWords", stopWords);
+
+        Query query = new Query();
+        if(pages!=null){
+            query.addCriteria(Criteria.where("from").all(pages));
+        }else{
+            query.addCriteria(Criteria.where("from").in(Utils.FacebookPages.getListId()));
+        }
+        if(initDateTime!=null&&endDateTime!=null){
+            query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
+        }
+
+        MapReduceResults<ValueObject> results = DS.mop.mapReduce( query,"post",mapFunction, reduceFunction,
+                new MapReduceOptions().scopeVariables(scopeVariables).outputTypeInline(), ValueObject.class);
+        Map<String, Float> m = copyToMap(results);
+        
+
+        Map<String,Float> result = new LinkedHashMap<>();
+
+         Stream <Entry<String,Float>> st = m.entrySet().stream();
+
+         st.sorted(Comparator.comparing(e -> e.getValue()*-1))
+              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+
+        return result;
+    }
+    public static Map<String, Float> countWordsPagesComments(List<String> pages,DateTime initDateTime,DateTime endDateTime) {
+        String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
+        String mapFunction = "function() {      var message = this.message;    if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    }}";
+        String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
+        ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
+
+        Map<String, Object> scopeVariables = new HashMap<String, Object>();
+        scopeVariables.put("stopWords", stopWords);
+
+        Query query = new Query();
+        if(pages!=null){
+            query.addCriteria(Criteria.where("page._id").all(pages));
+        }else{
+            query.addCriteria(Criteria.where("page._id").in(Utils.FacebookPages.getListId()));
+        }
+        if(initDateTime!=null&&endDateTime!=null){
+            query.addCriteria(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
+        }
+
+        MapReduceResults<ValueObject> results = DS.mop.mapReduce( query,"comment",mapFunction, reduceFunction,
+                new MapReduceOptions().scopeVariables(scopeVariables).outputTypeInline(), ValueObject.class);
+        Map<String, Float> m = copyToMap(results);
+        
+
+        Map<String,Float> result = new LinkedHashMap<>();
+
+         Stream <Entry<String,Float>> st = m.entrySet().stream();
+
+         st.sorted(Comparator.comparing(e -> e.getValue()*-1))
+              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+
+        return result;
+    }
+
+    public static Map<String, Float> countWordsUserComments(String idUser,DateTime initDateTime,DateTime endDateTime) {
+        String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
+        String mapFunction = "function() {   var comments = this.comments; comments.forEach(function(comment){ var message = comment.message; if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
+        String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
+        ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
+
+        Map<String, Object> scopeVariables = new HashMap<String, Object>();
+        scopeVariables.put("stopWords", stopWords);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(idUser));
+
+        if(initDateTime!=null&&endDateTime!=null){
+            query.addCriteria(Criteria.where("comments").elemMatch(Criteria.where("createdTime").lte(endDateTime.toDate()).and("createdTime").gte(initDateTime.toDate())));
+        }
+
+        MapReduceResults<ValueObject> results = DS.mop.mapReduce( query,"user",mapFunction, reduceFunction,
+                new MapReduceOptions().scopeVariables(scopeVariables).outputTypeInline(), ValueObject.class);
+        Map<String, Float> m = copyToMap(results);
+        
+
+        Map<String,Float> result = new LinkedHashMap<>();
+
+         Stream <Entry<String,Float>> st = m.entrySet().stream();
+
+         st.sorted(Comparator.comparing(e -> e.getValue()*-1))
+              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+
+        return result;
+    }
+
+    public static Map<String, Float> countWordsUserPosts(String idUser,DateTime initDateTime,DateTime endDateTime) {
+        String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
+        String mapFunction = "function() {   var likes = this.likes; likes.forEach(function(like){ var message = like.postMessage; if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
+        String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
+        ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
+
+        Map<String, Object> scopeVariables = new HashMap<String, Object>();
+        scopeVariables.put("stopWords", stopWords);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(idUser));
+        if(initDateTime!=null&&endDateTime!=null){
+            query.addCriteria(Criteria.where("likes").elemMatch(Criteria.where("createdTime").lte(endDateTime.toDate()).and("createdTime").gte(initDateTime.toDate())));
+        }
+
+        MapReduceResults<ValueObject> results = DS.mop.mapReduce( query,"user",mapFunction, reduceFunction,
+                new MapReduceOptions().scopeVariables(scopeVariables).outputTypeInline(), ValueObject.class);
+        Map<String, Float> m = copyToMap(results);
+
+          Map<String,Float> result = new LinkedHashMap<>();
+
+         Stream <Entry<String,Float>> st = m.entrySet().stream();
+
+         st.sorted(Comparator.comparing(e -> e.getValue()*-1))
+              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+
+        return result;
+    }
+
+    private static Map<String, Float> copyToMap(MapReduceResults<ValueObject> results) {
+        List<ValueObject> valueObjects = new ArrayList<ValueObject>();
+        for (ValueObject valueObject : results) {
+            valueObjects.add(valueObject);
+        }
+
+        Map<String, Float> m = new HashMap<String, Float>();
+        for (ValueObject vo : valueObjects) {
+            m.put(vo.getId(), vo.getValue());
+        }
+        return m;
     }
 }

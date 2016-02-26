@@ -48,6 +48,30 @@ define(['angular',  './routes', './controllers'], function(angular, routes, cont
 							isArray: true}});
 		}
 	]);
+  mod.factory('WordsUser', ['$resource',
+		function($resource) {
+			return $resource('api/users/words/:id', {
+							id: '@id',
+							},{'query': {
+									method: 'GET', 
+									isArray: false
+								},'get': {
+									method: 'GET',
+									isArray: false
+								}
+							});
+		}
+	]);
+  mod.factory('WordsPages', ['$resource',
+		function($resource) {
+			return $resource('api/pages/words', {
+							},{'query': {
+									method: 'GET', 
+									isArray: false
+								}
+							});
+		}
+	]);
   mod.controller('HeaderCtrl', controllers.HeaderCtrl);
   mod.controller('FooterCtrl', controllers.FooterCtrl);
   

@@ -10,6 +10,8 @@ define(['angular', './controllers', 'common'], function(angular, controllers) {
       .when('/',  {templateUrl: '/assets/javascripts/home/home.html', controller:controllers.HomeCtrl})
       .when('/posts',  {templateUrl: '/assets/javascripts/home/posts.html', controller:controllers.PostCtrl})
       .when('/user/:userId',  {templateUrl: '/assets/javascripts/home/single_user.html', controller:controllers.UserCtrl})
+      .when('/user/words/:userId',  {templateUrl: '/assets/javascripts/home/wordsUser.html', controller:controllers.UserWordsCtrl})
+      .when('/pages/words/',  {templateUrl: '/assets/javascripts/home/wordsPages.html', controller:controllers.PagesWordsCtrl})
       .otherwise( {templateUrl: '/assets/javascripts/home/notFound.html'});
   }]);
   return mod;

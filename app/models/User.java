@@ -151,6 +151,7 @@ public class User {
     public void addLike(Post post,String pageId){
         Like like = new Like();
         like.postId = post.getId();
+        like.postMessage = post.getMessage();
         like.createdDate = post.getCreatedTime();
         like.updatedDate = post.getUpdatedTime();
         like.pageId = pageId;
@@ -227,6 +228,7 @@ public class User {
         public String pageId;
         public String link;
         public String imageLink;
+        public String postMessage;
         public Date createdDate;
         public Date updatedDate;
         public Like(){
