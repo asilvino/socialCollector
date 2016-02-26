@@ -131,13 +131,7 @@ public class Application extends Controller {
 
         Map<String, Float> posts = MongoService.countWordsUserPosts(id,initDateTime,endDateTime);
         Map<String, Float> comments = MongoService.countWordsUserComments(id,initDateTime,endDateTime);
-        if(posts!=null){
-
-            Logger.debug(posts.toString());
-        }
-        if(comments!=null){
-            Logger.debug(comments.toString());
-        }
+       
         ObjectNode object =Json.newObject();
         object.put("posts",Json.toJson(posts));
         object.put("comments",Json.toJson(comments));

@@ -100,7 +100,10 @@
                           <td ng-bind="post.likesCount"></td>
                           <td ng-bind="post.commentsCount"></td>
                           <td ng-bind="post.createdTime| date:'dd/MM/yyyy HH:mm:ss Z'"></td>
-                          <td ng-bind="post.fromName+'-'+api[post.api]"></td>
+                          <td >
+                            <span class="label-success" ng-bind="post.fromName+'-'+api[post.api]">
+                            </span>
+                          </td>
                       </tr>
                     </tbody>
                     <tfoot>

@@ -43,11 +43,11 @@ public class Utils{
 
     public enum FacebookPages {
     chicorei("162726143745402"),
+    br4sileirissimos("404693309619224"),
     king55style("177679275612961"),
     mestredalma("160540370633021"),
     camiseteria("7018060973"),
-    kanuibr("197061883680740"),
-    br4sileirissimos("404693309619224");
+    kanuibr("197061883680740");
 
     public String id;
     private FacebookPages(String id){

@@ -46,8 +46,7 @@ public class Global extends GlobalSettings {
         ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
         CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
         CollectorInfo.CollectorInfoObject objectFacebook = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.FACEBOOK);
-
-        Akka.system().scheduler().schedule(
+      /*  Akka.system().scheduler().schedule(
            Duration.create(0, TimeUnit.MILLISECONDS), //Initial delay 0 milliseconds
            Duration.create(30, TimeUnit.DAYS),     //Frequency 30 minutes
            instance,
@@ -55,7 +54,7 @@ public class Global extends GlobalSettings {
            Akka.system().dispatcher(),
            null
         );
-
+*/
         Akka.system().scheduler().schedule(
             Duration.create(0, TimeUnit.HOURS), //Initial delay 0 milliseconds
             Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
@@ -64,6 +63,7 @@ public class Global extends GlobalSettings {
             Akka.system().dispatcher(),
             null
         );
+
         Logger.info("Application has started");
     }
 

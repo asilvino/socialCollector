@@ -109,6 +109,7 @@
                     <thead>
                       <tr>
                         <th>id</th>
+                        <th>Words Stats</th>
                         <th>name</th>
                         <th><a style="cursor:pointer" ng-href="" ng-model="query.order"  ng-click="selectOrder('likesCount')">Número de likes <label ng-bind="query.order==='likesCount'?direction[query.direction]:direction.none"></label>  </a></th>
                         <th><a style="cursor:pointer" ng-href="" ng-model="query.order"  ng-click="selectOrder('commentsCount')">Número de Comments  <label ng-bind="query.order==='commentsCount'?direction[query.direction]:direction.none"></label></a></th>
@@ -121,7 +122,10 @@
                           <td> 
                             <a ng-href="/#/user/{{user.id}}" ng-bind="user.id">
                             </a>
-                           </td>
+                          </td>
+                          <td> 
+                            <a ng-href="/#/user/words/{{user.id}}">Words Stats</a>
+                          </td>
                           <td>
                             <a ng-href="/#/user/{{user.id}}" ng-bind="user.name">
                             </a>
@@ -135,6 +139,7 @@
                     <tfoot>
                       <tr>
                         <th>id</th>
+                        <th>Words Stats</th>
                         <th>name</th>
                         <th>Número de likes</th>
                         <th>Número de Comments</th>

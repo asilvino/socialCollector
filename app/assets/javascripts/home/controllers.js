@@ -251,7 +251,7 @@ define([], function() {
 		$scope.api={};
 		$scope.api['models.Utils$FacebookPages']='facebook';
 		$scope.api['models.Utils$InstagramPages']='instagram';
-		$scope.query = {}
+		$scope.query = {};
 		$scope.query.date = $location.search().date||'';
 		$scope.selectDate = function(date){
 			$location.search('date',date);
@@ -262,8 +262,8 @@ define([], function() {
 			WordsUser.get($scope.query).$promise.then(function(response,error,callBack){
 				$scope.wordsPosts = response.posts;
 				$scope.wordsComments = response.comments;
-				$scope.totalPosts = Object.keys(wordsPosts).length
-				$scope.totalComments = Object.keys(wordsComments).length
+				$scope.totalPosts = Object.keys($scope.wordsPosts).length;
+				$scope.totalComments = Object.keys($scope.wordsComments).length;
 			},function(reason){
 				console.log(reason);
 			});
@@ -281,7 +281,7 @@ define([], function() {
 		$scope.api={};
 		$scope.api['models.Utils$FacebookPages']='facebook';
 		$scope.api['models.Utils$InstagramPages']='instagram';
-		$scope.query = {}
+		$scope.query = {};
 		$scope.query.date = $location.search().date||'';
 		$scope.query.pages = $location.search().pages;
 		$scope.selectDate = function(date){
@@ -307,8 +307,8 @@ define([], function() {
 			WordsPages.query($location.search()).$promise.then(function(response,error,callBack){
 				$scope.wordsPosts = response.posts;
 				$scope.wordsComments = response.comments;
-				$scope.totalPosts = Object.keys(wordsPosts).length
-				$scope.totalComments = Object.keys(wordsComments).length
+				$scope.totalPosts = Object.keys($scope.wordsPosts).length;
+				$scope.totalComments = Object.keys($scope.wordsComments).length;
 			},function(reason){
 				console.log(reason);
 			});
@@ -327,7 +327,8 @@ define([], function() {
 		HomeCtrl: HomeCtrl,
 		UserCtrl:UserCtrl,
 		PostCtrl:PostCtrl,
-		UserWordsCtrl:UserWordsCtrl
+		UserWordsCtrl:UserWordsCtrl,
+		PagesWordsCtrl:PagesWordsCtrl
 	};
 
 });

@@ -14,7 +14,9 @@ var containsObject = function (obj, list) {
 var map = function() {  
     var likes = this.likes;
     likes.forEach(function(like){
-        var message = like.message;
+        var message = like.postMessage;
+        print(like.createdDate);
+        var date = new Date(like.createdDate);
         if (message) { 
             // quick lowercase to normalize per your requirements
             message = message.toLowerCase().split(" "); 
