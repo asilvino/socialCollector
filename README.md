@@ -1,4 +1,4 @@
-# Social Media Collector
+# Social Media Collector [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://github.com/alvarojoao/socialCollector)  [![Travis](https://img.shields.io/badge/Heroku-deploy-green.svg)](https://heroku.com/) 
 
 ##For now, only fully working for Facebook.
 
