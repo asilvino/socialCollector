@@ -43,7 +43,7 @@ public class CollectorInfo extends UntypedActor {
         public static List<String> getList() {
             List<String> tags = new ArrayList<>();
 
-            for (Moment tag : Moment.values()) {
+            for (Collector tag : Collector.values()) {
                 tags.add(tag.name());
             }
             return tags;
@@ -56,6 +56,10 @@ public class CollectorInfo extends UntypedActor {
         public CollectorInfoObject(Collector collector){
             this.collector = collector;
             this.moment = Moment.ALL;
+        }
+        public CollectorInfoObject(Collector collector,Boolean recent){
+            this.collector = collector;
+            this.moment = (recent)?Moment.RECENT:Moment.ALL;
         }
         public Collector getCollector() {
             return collector;
