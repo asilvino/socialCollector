@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import bootstrap.CollectorInfo;
 import bootstrap.DS;
@@ -40,6 +41,8 @@ public class FacebookCollector {
 
     public static void collect(CollectorInfo.Moment moment){
         List<Page> pages = MongoService.getAllPagesFacebook();
+        Collections.shuffle(pages);
+
         for(Page page:pages) {
             try {
 
@@ -52,13 +55,14 @@ public class FacebookCollector {
             PagedList<Post> posts ;
             switch (moment){
                 case ALL:
+                    //posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
                     posts = facebook.feedOperations().getPosts(page.getId());
                     break;
                 case RECENT:
                     posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
                     break;
                 default:
-                    posts = facebook.feedOperations().getPosts(page.getId());
+                    posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
                     break;
             }
 
