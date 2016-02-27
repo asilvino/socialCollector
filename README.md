@@ -10,7 +10,7 @@ For front-end : **AngularJs**, **RequireJs**
  
  Running project [here](https://facebookcollector.herokuapp.com/#/)
  
- ###The features:
+ **The features:**
  
  - Collect User and Users' Interations
  - Evaluate Users' Interations, count Users likes, count Users comments
