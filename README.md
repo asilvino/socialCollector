@@ -49,7 +49,7 @@ All the `${?}` variables are from system envoriment
 
 Add a new security key:
 
-    `play.crypto.secret = ${?SECRET}`
+    play.crypto.secret = ${?SECRET}
 
 Add a Mongodb URI:
      mongo_uri = ${?MONGOLAB_URI}
