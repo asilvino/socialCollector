@@ -6,7 +6,7 @@ This project uses **Spring Social Resource**, **Spring Mongodb** and **Play Fram
 
 For front-end : **AngularJs**, **RequireJs**
  
- This project will collect Users, Posts and Comments, Cross Users throw Pages, and Interrest, you can see what users share commun Users from others Pages.
+ This project will collect Users, Posts and Comments, Cross Users throw Pages, and Interest, for instance, you will be able to see what Pages/Accounts share commun Users or even that Users share interest.
  
  Running project [here](https://facebookcollector.herokuapp.com/#/)
  
