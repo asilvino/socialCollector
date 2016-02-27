@@ -55,8 +55,8 @@ public class FacebookCollector {
             PagedList<Post> posts ;
             switch (moment){
                 case ALL:
-                    posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
-                    //posts = facebook.feedOperations().getPosts(page.getId());
+                    //posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
+                    posts = facebook.feedOperations().getPosts(page.getId());
                     break;
                 case RECENT:
                     posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
