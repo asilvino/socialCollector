@@ -45,7 +45,7 @@ public class Global extends GlobalSettings {
         createIndexForPost();
         ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
         CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
-        CollectorInfo.CollectorInfoObject objectFacebook = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.FACEBOOK);
+        CollectorInfo.CollectorInfoObject objectFacebook = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.FACEBOOK,true);
       /*  Akka.system().scheduler().schedule(
            Duration.create(0, TimeUnit.MILLISECONDS), //Initial delay 0 milliseconds
            Duration.create(30, TimeUnit.DAYS),     //Frequency 30 minutes
