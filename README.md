@@ -21,7 +21,7 @@ For front-end : **AngularJs**, **RequireJs**
  
 ##Configuring Social Pages:
 
-**Utils.java**'
+**Utils.java**
 
 ###Add Instagram Accounts
 
