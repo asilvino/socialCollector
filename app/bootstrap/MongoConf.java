@@ -27,7 +27,7 @@ import play.Play;
 
 /**
  * Mongodb Configuration
- * @author misael
+ * @author Alvaro
  *
  */
 @Configuration
