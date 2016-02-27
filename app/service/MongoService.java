@@ -431,7 +431,7 @@ public class MongoService {
 
     public static Map<String, Float> countWordsUserComments(String idUser,DateTime initDateTime,DateTime endDateTime) {
         String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
-        String mapFunction = "function() {   var comments = this.comments; comments.forEach(function(comment){  var message = comment.message; var initDate = new Date(initDateTime.toString()); var endDate = new Date(endDateTime); var createdDate = new Date(comment.createdDate.toString()); var date = new Date();  if (message&&createdDate>initDate&&createdDate<endDate) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
+        String mapFunction = "function() {   var comments = this.comments; comments.forEach(function(comment){  var message = comment.message; if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
         String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
         ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
 
@@ -442,6 +442,7 @@ public class MongoService {
         query.addCriteria(Criteria.where("_id").is(idUser));
 
         if(initDateTime!=null&&endDateTime!=null){
+            mapFunction = "function() {   var comments = this.comments; comments.forEach(function(comment){  var message = comment.message; var initDate = new Date(initDateTime.toString()); var endDate = new Date(endDateTime); var createdDate = new Date(comment.createdDate.toString()); var date = new Date();  if (message&&createdDate>initDate&&createdDate<endDate) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
             scopeVariables.put("initDateTime", initDateTime.toString());
             scopeVariables.put("endDateTime", endDateTime.toString());
             // query.addCriteria(Criteria.where("comments").elemMatch(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate())));
@@ -464,7 +465,7 @@ public class MongoService {
 
     public static Map<String, Float> countWordsUserPosts(String idUser,DateTime initDateTime,DateTime endDateTime) {
         String containsObject = "function (obj, list) {    var i;    for (i = 0; i < list.length; i++) {        if (list[i] === obj) {            return true;        }    } return false;}";
-        String mapFunction = "function() {   var likes = this.likes; likes.forEach(function(like){  var message = like.postMessage; var initDate = new Date(initDateTime.toString()); var endDate = new Date(endDateTime); var createdDate = new Date(like.createdDate.toString()); var date = new Date();  if (message&&createdDate>initDate&&createdDate<endDate) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
+        String mapFunction = "function() {   var likes = this.likes; likes.forEach(function(like){  var message = like.postMessage; if (message) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
         String reduceFunction = "function( key, values ) {        var count = 0;        values.forEach(function(v) {                    count +=v;        });    return count;}";
         ExecutableMongoScript echoScript = new ExecutableMongoScript(containsObject);
 
@@ -473,9 +474,9 @@ public class MongoService {
         //&&like.createdDate<=endDateTime
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(idUser));
-        try{
 
         if(initDateTime!=null&&endDateTime!=null){
+            mapFunction = "function() {   var likes = this.likes; likes.forEach(function(like){  var message = like.postMessage; var initDate = new Date(initDateTime.toString()); var endDate = new Date(endDateTime); var createdDate = new Date(like.createdDate.toString()); var date = new Date();  if (message&&createdDate>initDate&&createdDate<endDate) {   message = message.toLowerCase().split(' ');         for (var i = message.length - 1; i >= 0; i--) { if (message[i]&&stopWords.indexOf(message[i])<=-1)  {  emit(message[i], 1);           }        }    } }); }";
             scopeVariables.put("initDateTime", initDateTime.toString());
             scopeVariables.put("endDateTime", endDateTime.toString());
             // query.addCriteria(Criteria.where("likes").elemMatch(Criteria.where("createdTime").lte(endDateTime.toDate()).gte(initDateTime.toDate())));
@@ -493,10 +494,6 @@ public class MongoService {
               .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
 
         return result;
-        }catch(Exception e){
-            Logger.error(e.getMessage());
-        }
-        return null;
 
     }
 

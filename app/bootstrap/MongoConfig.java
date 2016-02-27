@@ -14,7 +14,7 @@ import com.mongodb.MongoClientURI;
 
 /**
  * Mongodb Configuration - Heroku
- * @author renato
+ * @author Alvaro
  *
  */
 @Configuration
@@ -43,8 +43,10 @@ public class MongoConfig extends AbstractMongoConfiguration{
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {
+		
+		String MONGO_URI = Play.application().configuration().getString("mongo_uri");
 
-        clientURI = new MongoClientURI(System.getenv("MONGOLAB_URI"));
+        clientURI = new MongoClientURI(MONGO_URI);
 		mongo = new MongoClient(clientURI);
 		return mongo;
 	}
