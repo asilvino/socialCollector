@@ -67,6 +67,7 @@ public class FacebookCollector {
             }
 
             boolean firstTime = true;
+            Logger.debug("Started:"+page.getTitle()+"  " );
             do{
                 try{
                     if(!firstTime)
@@ -92,10 +93,10 @@ public class FacebookCollector {
                 }
                 Logger.debug("update:"+page.getTitle()+"  " );
             }while(posts.getNextPage()!=null);
-            Logger.debug("Finished page:"+page.getId());
+            Logger.debug("Finished page:"+page.getTitle());
 
             }catch (Exception e){
-                Logger.debug("error on page:"+page.getId());
+                Logger.debug("error on page:"+page.getTitle());
                 Logger.error("error on page:"+e.getMessage());
                 Logger.error("Token: "+token);
             }
