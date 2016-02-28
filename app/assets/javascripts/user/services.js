@@ -5,16 +5,17 @@ define(['angular', 'common'], function (angular) {
   'use strict';
 
   var mod = angular.module('user.services', ['yourprefix.common', 'ngCookies']);
-  mod.factory('userService', ['$http', '$q', 'playRoutes', '$cookies', '$log', function ($http, $q, playRoutes, $cookies, $log) {
+  mod.factory('userService', ['$http', '$q', 'playRoutes', '$cookies', '$log','$location', function ($http, $q, playRoutes, $cookies, $log,$location) {
     var user, token = $cookies.get('XSRF-TOKEN');
 
     /* If the token is assigned, check that the token is still valid on the server */
     if (token) {
       $log.info('Restoring user from cookie...');
-      playRoutes.controllers.Users.authUser().get()
+      playRoutes.controllers.Application.authUser().get()
         .success(function (data) {
           $log.info('Welcome back, ' + data.name);
           user = data;
+          $location.path('/users');
         })
         .error(function () {
           $log.info('Token no longer valid, please log in.');
@@ -26,10 +27,11 @@ define(['angular', 'common'], function (angular) {
 
     return {
       loginUser: function (credentials) {
-        return playRoutes.controllers.Application.login().post(credentials).then(function (response) {
+        return playRoutes.controllers.Application.authentication().post(credentials).then(function (response) {
           // return promise so we can chain easily
           token = response.data.token;
-          return playRoutes.controllers.Users.authUser().get();
+          $cookies.put('XSRF-TOKEN',token);
+          return playRoutes.controllers.Application.authUser().get();
         }).then(function (response) {
           user = response.data;
           return user;
@@ -74,6 +76,17 @@ define(['angular', 'common'], function (angular) {
     });
   };
   handleRouteError.$inject = ['$rootScope', '$location'];
+  var handleRouteSuccess = function ($rootScope, $location,userService) {
+    $rootScope.$on('$routeChangeSuccess', function (/*e, next, current*/) {
+        if(!userService.getUser()){
+          $location.path('/');
+        }else if($location.path()==='/'){
+          $location.path('/users');
+        }
+    });
+  };
+  handleRouteSuccess.$inject = ['$rootScope', '$location','userService'];
   mod.run(handleRouteError);
+  mod.run(handleRouteSuccess);
   return mod;
 });

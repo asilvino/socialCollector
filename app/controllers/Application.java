@@ -39,17 +39,24 @@ import play.*;
 import play.libs.Akka;
 import play.libs.Json;
 import play.mvc.*;
+import play.Play;
+import play.Logger;
 
 import service.MongoService;
 import views.html.*;
 
 public class Application extends Controller {
 
+    public static Result GO_HOME = redirect(
+            routes.Application.index()
+    );
 
     public Result index() {
        
         return ok(index.render("Your new application is ready."));
     }
+
+    @Security.Authenticated(Secured.class)
     public Result getUsers(){
         String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";
         String order = request().getQueryString("order")!=null?request().getQueryString("order"):"likesCount";
@@ -93,6 +100,7 @@ public class Application extends Controller {
         return ok(object);
     }
 
+    @Security.Authenticated(Secured.class)
     public Result getSingleUser(String id){
         User user = null;
         if(id!=null){
@@ -116,6 +124,8 @@ public class Application extends Controller {
         }
         return ok(Json.toJson(user));
     }
+
+    @Security.Authenticated(Secured.class)
     public Result getUserWords(String id){
         String date = request().getQueryString("date");
         DateTime initDateTime = null;
@@ -138,6 +148,21 @@ public class Application extends Controller {
         return ok(object);
     }
 
+    public Result authUser(){
+        String username = session("username");
+        if(username!=null){
+            String token = session("token");
+            ObjectNode object =Json.newObject();
+            object.put("name",username);
+            object.put("token",token);
+            return ok(object);
+        }else{
+            return ok();
+        }
+
+    }
+
+    @Security.Authenticated(Secured.class)
     public Result getPagesWords(){
         User user = null;
         String pagesIds = request().getQueryString("pages");
@@ -164,7 +189,7 @@ public class Application extends Controller {
         return ok(object);
     }
     
-
+    @Security.Authenticated(Secured.class)
     public Result getPosts(){
         String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";
         String order = request().getQueryString("order")!=null?request().getQueryString("order"):"likesCount";
@@ -204,20 +229,7 @@ public class Application extends Controller {
         return ok(object);
     }
 
-    public Result instagram(){
-        String code = request().getQueryString("code");
-        if(code!=null){
-            return ok(code);
-//
-//            ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
-//            CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
-//            object.setToken(code);
-//            instance.tell(object,null);
-        }
-
-        return ok();
-    }
-
+    @Security.Authenticated(Secured.class)
     @BodyParser.Of(BodyParser.Json.class)
     public Result savePage(){
         JsonNode json = request().body().asJson();
@@ -233,10 +245,50 @@ public class Application extends Controller {
 
         return ok(result);
     }
+
+    @Security.Authenticated(Secured.class)
     public Result allPage(){
         List<Page> pageList = MongoService.getAllPages();
         return ok(Json.toJson(pageList));
     }
+    
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result authentication(){
+        JsonNode json = request().body().asJson();
+        String loginUser = json.findPath("username").asText();
+        String loginPass = json.findPath("password").asText();
+
+        String username = Play.application().configuration().getString("username");
+        String password = Play.application().configuration().getString("password");
+
+
+        ObjectNode object =Json.newObject();
+
+        if(loginUser.equals(username)&&loginPass.equals(password)){
+            String uuid = java.util.UUID.randomUUID().toString();
+            session("username", loginUser);
+            session("token", uuid);
+
+            object.put("token",uuid);
+            return ok(object);
+        }else{
+            return badRequest();
+        }
+
+    }
+
+     /**
+     * Logout and clean the session.
+     *
+     * @return Index page
+     */
+    public Result logout() {
+        session().clear();
+        flash("success", "Logout");
+        return GO_HOME;
+    }
+
+    @Security.Authenticated(Secured.class)
     public Result deletePage(String id){
         if(id!=null&&!id.equals("")) {
             ObjectNode result = Json.newObject();
@@ -260,6 +312,9 @@ public class Application extends Controller {
                         , routes.javascript.Application.allPage()
                         , routes.javascript.Application.savePage()
                         , routes.javascript.Application.deletePage()
+                        , routes.javascript.Application.authentication()
+                        , routes.javascript.Application.logout()
+                        , routes.javascript.Application.authUser()
                         //,controllers.routes.javascript.Projects.addGroup()
                 )
         );

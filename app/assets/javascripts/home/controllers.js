@@ -36,6 +36,7 @@ define([], function() {
 					$scope.query.pages=[];
 				}
 				$scope.pages = response;
+
 			},function(reason){
 				console.log(reason);
 			});

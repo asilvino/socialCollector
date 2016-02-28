@@ -391,7 +391,7 @@ public class MongoService {
          Stream <Entry<String,Float>> st = m.entrySet().stream();
 
          st.sorted(Comparator.comparing(e -> e.getValue()*-1))
-              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+              .forEachOrdered(e ->{ if(e.getValue()>1){result.put(e.getKey(),e.getValue());}});
 
         return result;
     }
@@ -424,7 +424,7 @@ public class MongoService {
          Stream <Entry<String,Float>> st = m.entrySet().stream();
 
          st.sorted(Comparator.comparing(e -> e.getValue()*-1))
-              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+              .forEachOrdered(e ->{ if(e.getValue()>1){result.put(e.getKey(),e.getValue());}});
 
         return result;
     }
@@ -458,7 +458,7 @@ public class MongoService {
          Stream <Entry<String,Float>> st = m.entrySet().stream();
 
          st.sorted(Comparator.comparing(e -> e.getValue()*-1))
-              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+              .forEachOrdered(e ->{ if(e.getValue()>1){result.put(e.getKey(),e.getValue());}});
 
         return result;
     }
@@ -491,7 +491,7 @@ public class MongoService {
          Stream <Entry<String,Float>> st = m.entrySet().stream();
 
          st.sorted(Comparator.comparing(e -> e.getValue()*-1))
-              .forEachOrdered(e ->result.put(e.getKey(),e.getValue()));
+              .forEachOrdered(e ->{ if(e.getValue()>1){result.put(e.getKey(),e.getValue());}});
 
         return result;
 

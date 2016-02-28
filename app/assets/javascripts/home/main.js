@@ -23,7 +23,7 @@ define(['angular',  './routes', './controllers'], function(angular, routes, cont
 	]);
   mod.factory('Pages', ['$resource',
 		function($resource) {
-			return $resource('api/pages/', {
+			return $resource('api/pages', {
 							},{'query': {
 									method: 'GET', 
 									isArray: true
@@ -33,7 +33,7 @@ define(['angular',  './routes', './controllers'], function(angular, routes, cont
 	]);
   mod.factory('Post', ['$resource',
 		function($resource) {
-			return $resource('api/posts/', {
+			return $resource('api/posts', {
 							},{'query': {
 									method: 'GET', 
 									isArray: false
@@ -43,7 +43,7 @@ define(['angular',  './routes', './controllers'], function(angular, routes, cont
 	]);
   mod.factory('Page', ['$resource',
 		function($resource) {
-			return $resource('api/pages/',{},{'query': {
+			return $resource('api/pages',{},{'query': {
 							method: 'GET', 
 							isArray: true}});
 		}

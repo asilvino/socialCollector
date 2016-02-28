@@ -3,18 +3,21 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
+GET      /                           controllers.Application.index()
+GET      /authUser                           controllers.Application.authUser()
+GET      /logout                           controllers.Application.logout()
+POST     /api/authentication         controllers.Application.authentication()
+
 GET     /api/users                           controllers.Application.getUsers()
-GET     /api/users/:id                           controllers.Application.getSingleUser(id:String)
-GET     /api/users/words/:id                           controllers.Application.getUserWords(id:String)
-GET     /api/pages/words                          controllers.Application.getPagesWords()
+GET     /api/users/:id            controllers.Application.getSingleUser(id:String)
+GET     /api/pages                           controllers.Application.allPage()
+GET     /api/users/words/:id       controllers.Application.getUserWords(id:String)
+GET     /api/pages/words            controllers.Application.getPagesWords()
 GET     /api/posts                           controllers.Application.getPosts()
 
-GET     /deletepage/:id                           controllers.Application.deletePage(id:String)
+GET     /deletepage/:id             controllers.Application.deletePage(id:String)
 GET     /savepage                           controllers.Application.savePage()
-GET     /api/pages                           controllers.Application.allPage()
 
-GET     /instagram                           controllers.Application.instagram()
 
 GET           /jsroutes.js         controllers.Application.javascriptRoutes()
 
