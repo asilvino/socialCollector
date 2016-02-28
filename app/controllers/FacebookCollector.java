@@ -101,6 +101,8 @@ public class FacebookCollector {
                 Logger.error("Token: "+token);
             }
         }
+        Logger.debug("Finished FACEBOOK Collect on MODE:"+moment.name()+"  " );
+
     }
 
     private static void fetchLikesAndUpdateUsers(Post post, Set<User> users,Page page) {
