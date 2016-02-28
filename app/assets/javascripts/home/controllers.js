@@ -261,6 +261,7 @@ define([], function() {
 		$scope.updateTable = function(){
 			$scope.query.id = $routeParams.userId;
 			WordsUser.get($scope.query).$promise.then(function(response,error,callBack){
+				$scope.user = response.user;
 				$scope.wordsPosts = response.posts;
 				$scope.wordsComments = response.comments;
 				$scope.totalPosts = Object.keys($scope.wordsPosts).length;

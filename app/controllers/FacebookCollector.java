@@ -41,7 +41,7 @@ public class FacebookCollector {
 
     public static void collect(CollectorInfo.Moment moment){
         List<Page> pages = MongoService.getAllPagesFacebook();
-        Collections.shuffle(pages);
+        // Collections.shuffle(pages);
 
         for(Page page:pages) {
             try {

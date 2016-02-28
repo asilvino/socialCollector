@@ -35,6 +35,7 @@ import bootstrap.CollectorInfo;
 import bootstrap.DS;
 import models.Page;
 import models.User;
+import models.Utils;
 import play.*;
 import play.libs.Akka;
 import play.libs.Json;
@@ -130,7 +131,10 @@ public class Application extends Controller {
         String date = request().getQueryString("date");
         DateTime initDateTime = null;
         DateTime endDateTime = null;
-
+         User user = null;
+        if(id!=null){
+            user = MongoService.getUserInfoById(id);
+        }
         if(date!=null&&!date.equals("")) {
             List<String> dates= Arrays.asList(date.trim().split("-"));
             DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy");
@@ -143,6 +147,8 @@ public class Application extends Controller {
         Map<String, Float> comments = MongoService.countWordsUserComments(id,initDateTime,endDateTime);
        
         ObjectNode object =Json.newObject();
+        if(user!=null)
+            object.put("user",Json.toJson(user));  
         object.put("posts",Json.toJson(posts));
         object.put("comments",Json.toJson(comments));
         return ok(object);

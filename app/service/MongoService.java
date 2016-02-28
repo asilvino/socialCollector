@@ -68,7 +68,18 @@ public class MongoService {
     public static User getUserById(String id){
         return DS.mop.findById(id,User.class);
     }
-
+    public static User getUserInfoById(String id){
+        Criteria criteria = Criteria.where("_id").is(id);
+        Query query = new Query(criteria);
+        query.fields().exclude("likes");
+        query.fields().exclude("comments");
+        List<User> users =  DS.mop.find(query,User.class);
+        if(users!=null && users.size()>0){
+            return users.get(0);
+        }
+        return null;
+    }
+    
 
     public static boolean save(Set<User> users){
         try{
