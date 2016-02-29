@@ -90,6 +90,7 @@ public class Application extends Controller {
             }
             users = MongoService.getUsers(pageInt,apiObject, direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
         }catch (Exception e){
+            Logger.error(e.getMessage());
             users = MongoService.getUsers(1,null, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
         }
 
@@ -116,7 +117,7 @@ public class Application extends Controller {
             MongoService.OrderBy orderBy = MongoService.OrderBy.valueOf(order);
             MongoService.Api apiObject = MongoService.Api.valueOf(api);
 
-            List<String> pages = null;
+            List<String> pages = null;  
             if(pagesIds!=null&&!pagesIds.equals("")) {
                  pages = Arrays.asList(pagesIds.split(","));
             }
@@ -131,6 +132,7 @@ public class Application extends Controller {
             }
             count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
         }catch (Exception e){
+            Logger.error(e.getMessage());
             count  = MongoService.countUsers(null,Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
         }
 

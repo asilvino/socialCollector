@@ -9,7 +9,13 @@ define([], function() {
 
     $scope.login = function(credentials) {
       userService.loginUser(credentials).then(function(user) {
-        $location.path('/users');
+        if(user||users!==null)
+          $location.path('/users');
+        else{
+          $scope.error = "Login ou senha Invalidos!";
+        }
+      },function(reason) {
+          $scope.error = "Login ou senha Invalidos!";
       });
     };
   };
