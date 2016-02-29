@@ -53,8 +53,8 @@ define([], function() {
 				$scope.totalPages= Math.ceil($scope.total/$scope.itensperpage);
 				var untilPageInt = ($scope.totalPages>(pageInt+6))?pageInt+6:($scope.totalPages+1);
 				$scope.pagesAvailables= _.range(pageInt,untilPageInt);
-				$scope.de = pageInt*$scope.users.length-$scope.users.length+1;
-				$scope.ate = pageInt*$scope.users.length;
+				$scope.de = pageInt*$scope.itensperpage-$scope.itensperpage+1;
+				$scope.ate = pageInt*$scope.itensperpage;
 			},function(reason){
 				console.log(reason);
 			});
