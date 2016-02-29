@@ -19,8 +19,8 @@ define([], function() {
 		$scope.direction.asc='▲';
 		$scope.direction.desc='▼';
 		$scope.direction.none='▼▲';
-		$scope.itensperpage = 25; 
-		
+		$scope.itensperpage = 10; 
+
 		$scope.query.direction = $location.search().direction||'desc';
 		$scope.query.order = $location.search().order||'likesCount';
 		$scope.query.date = $location.search().date||'';

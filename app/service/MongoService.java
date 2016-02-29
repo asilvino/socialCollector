@@ -229,8 +229,9 @@ public class MongoService {
 
     public static List<User> getUsers(int page,Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name) {
         Query query = new Query();
-        query.limit(25);
-        query.skip((page - 1) * 25);
+        int limit = 10;
+        query.limit(limit);
+        query.skip((page - 1) * limit);
         if (pages != null) {
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
