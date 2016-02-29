@@ -274,6 +274,7 @@ public class MongoService {
         }
         query.with(new Sort(direction,order.name()));
         query.fields().exclude("likes");
+        query.fields().exclude("comments");
         return DS.mop.find(query,User.class);
     }
 
