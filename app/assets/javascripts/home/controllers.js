@@ -5,7 +5,7 @@ define([], function() {
 	'use strict';
 
 	/** Controls the index page */
-	var HomeCtrl = function($scope, $rootScope, $location, helper,UserSearch,Pages) {
+	var HomeCtrl = function($scope, $rootScope, $location, helper,UserSearch,UserCount,Pages) {
 		$rootScope.pageTitle = 'Welcome';
 		$scope.api={};
 		$scope.api['models.Utils$FacebookPages']='facebook';
@@ -19,7 +19,8 @@ define([], function() {
 		$scope.direction.asc='▲';
 		$scope.direction.desc='▼';
 		$scope.direction.none='▼▲';
-
+		$scope.itensperpage = 25; 
+		
 		$scope.query.direction = $location.search().direction||'desc';
 		$scope.query.order = $location.search().order||'likesCount';
 		$scope.query.date = $location.search().date||'';
@@ -43,9 +44,13 @@ define([], function() {
 		$scope.updateTable = function(){
 			UserSearch.query($location.search()).$promise.then(function(response,error,callBack){
 				$scope.users = response.users;
+			},function(reason){
+				console.log(reason);
+			});
+			UserCount.query($location.search()).$promise.then(function(response,error,callBack){
 				$scope.total = response.total;
 				var pageInt = parseInt($scope.query.page);
-				$scope.totalPages= Math.ceil($scope.total/25);
+				$scope.totalPages= Math.ceil($scope.total/$scope.itensperpage);
 				var untilPageInt = ($scope.totalPages>(pageInt+6))?pageInt+6:($scope.totalPages+1);
 				$scope.pagesAvailables= _.range(pageInt,untilPageInt);
 				$scope.de = pageInt*$scope.users.length-$scope.users.length+1;
@@ -110,7 +115,7 @@ define([], function() {
 		};
 
 	};
-	HomeCtrl.$inject = ['$scope', '$rootScope', '$location', 'helper','UserSearch','Pages'];
+	HomeCtrl.$inject = ['$scope', '$rootScope', '$location', 'helper','UserSearch','UserCount','Pages'];
 	/** Controls the index page */
 	var PostCtrl = function($scope, $rootScope, $location, helper,UserSearch,Post,Pages) {
 		$rootScope.pageTitle = 'Welcome';

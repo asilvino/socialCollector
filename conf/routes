@@ -10,6 +10,7 @@ POST     /api/authentication         controllers.Application.authentication()
 
 GET     /api/users                           controllers.Application.getUsers()
 GET     /api/users/:id            controllers.Application.getSingleUser(id:String)
+GET     /api/users/count            controllers.Application.getCountUsers()
 GET     /api/pages                           controllers.Application.allPage()
 GET     /api/users/words/:id       controllers.Application.getUserWords(id:String)
 GET     /api/pages/words            controllers.Application.getPagesWords()

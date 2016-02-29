@@ -89,17 +89,58 @@ public class Application extends Controller {
                 endDateTime = f.parseDateTime(dates.get(1).trim());
             }
             users = MongoService.getUsers(pageInt,apiObject, direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
-            count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
         }catch (Exception e){
             users = MongoService.getUsers(1,null, Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
+        }
+
+        ObjectNode object =Json.newObject();
+        object.put("users",Json.toJson(users));
+        return ok(object);
+    }
+
+    @Security.Authenticated(Secured.class)
+    public Result getCountUsers(){
+        String page = request().getQueryString("page")!=null?request().getQueryString("page"):"1";
+        String order = request().getQueryString("order")!=null?request().getQueryString("order"):"likesCount";
+        String api = request().getQueryString("api")!=null&&!request().getQueryString("api").equals("")?request().getQueryString("api"):"none";
+        String direction = request().getQueryString("direction")!=null?request().getQueryString("direction"):"desc";
+        String date = request().getQueryString("date");
+        String name = request().getQueryString("name");
+        String pagesIds = request().getQueryString("pages");
+        String[] keyword = request().getQueryString("keyword")!=null&&!request().getQueryString("keyword").equals("")?request().getQueryString("keyword").split(" "):null;
+        List<User> users ;
+        long count;
+        try {
+            int pageInt = Integer.parseInt(page)>=1?Integer.parseInt(page):1;
+            Sort.Direction direction1 = Sort.Direction.fromStringOrNull(direction.toUpperCase());
+            MongoService.OrderBy orderBy = MongoService.OrderBy.valueOf(order);
+            MongoService.Api apiObject = MongoService.Api.valueOf(api);
+
+            List<String> pages = null;
+            if(pagesIds!=null&&!pagesIds.equals("")) {
+                 pages = Arrays.asList(pagesIds.split(","));
+            }
+            DateTime initDateTime = null;
+            DateTime endDateTime = null;
+
+            if(date!=null&&!date.equals("")) {
+                List<String> dates= Arrays.asList(date.trim().split("-"));
+                DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy");
+                initDateTime = f.parseDateTime(dates.get(0).trim());
+                endDateTime = f.parseDateTime(dates.get(1).trim());
+            }
+            count  = MongoService.countUsers(apiObject,direction1, orderBy,pages,initDateTime,endDateTime,keyword,name);
+        }catch (Exception e){
             count  = MongoService.countUsers(null,Sort.Direction.DESC, MongoService.OrderBy.likesCount,null,null,null,null,null);
         }
 
         ObjectNode object =Json.newObject();
         object.put("total",count);
-        object.put("users",Json.toJson(users));
         return ok(object);
     }
+
+
+
 
     @Security.Authenticated(Secured.class)
     public Result getSingleUser(String id){
@@ -314,6 +355,7 @@ public class Application extends Controller {
         return ok(
                 Routes.javascriptRouter("jsRoutes"
                         , routes.javascript.Application.getUsers()
+                        , routes.javascript.Application.getCountUsers()
                         , routes.javascript.Application.getSingleUser()
                         , routes.javascript.Application.allPage()
                         , routes.javascript.Application.savePage()

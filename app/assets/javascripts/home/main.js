@@ -21,6 +21,16 @@ define(['angular',  './routes', './controllers'], function(angular, routes, cont
 							});
 		}
 	]);
+  mod.factory('UserCount', ['$resource',
+		function($resource) {
+			return $resource('api/users/count', {
+							},{'query': {
+									method: 'GET', 
+									isArray: false
+								}
+							});
+		}
+	]);
   mod.factory('Pages', ['$resource',
 		function($resource) {
 			return $resource('api/pages', {
