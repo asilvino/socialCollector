@@ -15,7 +15,6 @@ define(['angular', 'common'], function (angular) {
         .success(function (data) {
           $log.info('Welcome back, ' + data.name);
           user = data;
-          $location.path('/users');
         })
         .error(function () {
           $log.info('Token no longer valid, please log in.');
