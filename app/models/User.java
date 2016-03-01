@@ -40,11 +40,12 @@ public class User {
     private int likesCount;
 
     public  Set<Comment> comments  = new HashSet<>();
+    
+    @Indexed
     private int commentsCount;
 
     private  Set<Page> pages  = new HashSet<>();
     
-    @Indexed
     private int pagesCount;
 
     public User(){
