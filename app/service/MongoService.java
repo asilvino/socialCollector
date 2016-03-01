@@ -306,33 +306,33 @@ public class MongoService {
         
             }
         }
-        //query.with(new Sort(direction,order.name()));
+        query.with(new Sort(direction,order.name()));
         query.fields().exclude("likes");
         query.fields().exclude("comments");
 
-        Aggregation agg = newAggregation(
-            // unwind("likes"),
-            // unwind("comments"),
-            match(criteriabasic),
-            match(criteriapages),
-            match(criterianame),
-            match(criteriaapi),
-            match(criteriadate),
-            match(criteriasearchPost),
-            sort(direction,order.name()),
-            project("_id","api","profilePic","commentsCount"
-                // ,"likes","comments"
-                ,"name","username"
-                ,"likesCount","pages","pagesCount"),
-            limit(limit),
-            skip(skip)
-        ).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
-        //Convert the aggregation result into a List
-        AggregationResults<User> groupResults 
-            = DS.mop.aggregate( agg ,"user",User.class);
-        List<User> result = groupResults.getMappedResults();
-        return result;
-        //return DS.mop.find(query,User.class);
+        // Aggregation agg = newAggregation(
+        //     // unwind("likes"),
+        //     // unwind("comments"),
+        //     match(criteriabasic),
+        //     match(criteriapages),
+        //     match(criterianame),
+        //     match(criteriaapi),
+        //     match(criteriadate),
+        //     match(criteriasearchPost),
+        //     sort(direction,order.name()),
+        //     project("_id","api","profilePic","commentsCount"
+        //         // ,"likes","comments"
+        //         ,"name","username"
+        //         ,"likesCount","pages","pagesCount"),
+        //     limit(limit),
+        //     skip(skip)
+        // ).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+        // //Convert the aggregation result into a List
+        // AggregationResults<User> groupResults 
+        //     = DS.mop.aggregate( agg ,"user",User.class);
+        // List<User> result = groupResults.getMappedResults();
+        // return result;
+        return DS.mop.find(query,User.class);
     }
 
     public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name){

@@ -41,9 +41,10 @@ public class FacebookCollector {
 
     public static void collect(CollectorInfo.Moment moment){
         List<Page> pages = MongoService.getAllPagesFacebook();
-        Collections.shuffle(pages);
+        // Collections.shuffle(pages);
 
         for(Page page:pages) {
+
             try {
 
                 long lastMonth = DateTime.now().minusMonths(1).toDateTime().getMillis()/1000;
@@ -94,20 +95,20 @@ public class FacebookCollector {
                                     Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
                                     try{
                                         fetchLikesAndUpdateUsers(post, users,page);
-                                    }catch (Exception e){
-                                        Logger.debug("error on get Likes: "+e.getMessage() +" - Continue to Comments.");
+                                    }catch (Exception e1){
+                                        Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
                                     }
                                 }
                                 try{
 
                                     fetchCommentAndUpdateUsers(post, comments, users, page);
 
-                                }catch (Exception e){
-                                    Logger.debug("error on get Comments: "+e.getMessage() +" - Trying again.");
+                                }catch (Exception e2){
+                                    Logger.debug("error on get Comments: "+e2.getMessage() +" - Trying again.");
                                     try{
                                         fetchCommentAndUpdateUsers(post, comments, users, page);
-                                    }catch (Exception e){
-                                        Logger.debug("error on get Comments : "+e.getMessage() +" - Continue to next post.");
+                                    }catch (Exception e3){
+                                        Logger.debug("error on get Comments : "+e3.getMessage() +" - Continue to next post.");
                                     }
                                 }
                                 MongoService.save(post);
