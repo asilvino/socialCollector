@@ -41,7 +41,7 @@ public class Global extends GlobalSettings {
 
         createPages();
 
-
+        createIndexForUsers();
         createIndexForPost();
         ActorRef instance = Akka.system().actorOf(Props.create(CollectorInfo.class),"collector");
         CollectorInfo.CollectorInfoObject object = new CollectorInfo.CollectorInfoObject(CollectorInfo.Collector.INSTAGRAM);
@@ -78,6 +78,18 @@ public class Global extends GlobalSettings {
             }
         }catch (Exception e){
             Logger.debug("error on index post"+e.getMessage());
+        }
+    }
+    private void createIndexForUsers() {
+        try {
+            if(!DS.mop.collectionExists("user")){
+                DS.mop.createCollection("user");
+                DBObject textIndex = new BasicDBObject("likes.potMessage", "text");
+                textIndex.put("comments.message","text");
+                DS.mop.getCollection("post").createIndex(textIndex);
+            }
+        }catch (Exception e){
+            Logger.debug("error on index User"+e.getMessage());
         }
     }
 

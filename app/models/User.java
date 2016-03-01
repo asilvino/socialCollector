@@ -35,12 +35,16 @@ public class User {
     private  String profilePic;
 
     public  Set<Like> likes  = new HashSet<>();
+
+    @Indexed
     private int likesCount;
 
     public  Set<Comment> comments  = new HashSet<>();
     private int commentsCount;
 
     private  Set<Page> pages  = new HashSet<>();
+    
+    @Indexed
     private int pagesCount;
 
     public User(){
