@@ -46,54 +46,76 @@ public class FacebookCollector {
         for(Page page:pages) {
             try {
 
-            long lastMonth = DateTime.now().minusMonths(1).toDateTime().getMillis()/1000;
-            long now = DateTime.now().toDateTime().getMillis()/1000;
+                long lastMonth = DateTime.now().minusMonths(1).toDateTime().getMillis()/1000;
+                long now = DateTime.now().toDateTime().getMillis()/1000;
 
 
 
-            PagingParameters pagingParameters = new PagingParameters(25,null,lastMonth,now);
-            PagedList<Post> posts ;
-            switch (moment){
-                case ALL:
-                    //posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
-                    posts = facebook.feedOperations().getPosts(page.getId());
-                    break;
-                case RECENT:
-                    posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
-                    break;
-                default:
-                    posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
-                    break;
-            }
-
-            boolean firstTime = true;
-            Logger.debug("Started:"+page.getTitle()+"  " );
-            do{
-                try{
-                    if(!firstTime)
-                        posts = facebook.feedOperations().getPosts(page.getId(),posts.getNextPage());
-                    firstTime = false;
-                    for(Post post: posts) {
-                        Set<User> users = new HashSet<>();
-                        Set<Comment> comments = new HashSet<>();
-                        fetchCommentAndUpdateUsers(post, comments, users, page);
-                        fetchLikesAndUpdateUsers(post, users,page);
-
-                        MongoService.save(post);
-
-                        for(Comment comment: comments){
-
-                            MongoService.save(comment,page,post.getId());
-                        }
-                        //save or update users iterations
-                        MongoService.save(users);
-                    }
-                }catch (Exception e){
-                    Logger.debug("error on get more  posts: "+e.getMessage() );
+                PagingParameters pagingParameters = new PagingParameters(25,null,lastMonth,now);
+                PagedList<Post> posts ;
+                switch (moment){
+                    case ALL:
+                        //posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
+                        posts = facebook.feedOperations().getPosts(page.getId());
+                        break;
+                    case RECENT:
+                        posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
+                        break;
+                    default:
+                        posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
+                        break;
                 }
-                Logger.debug("update:"+page.getTitle()+"  " );
-            }while(posts.getNextPage()!=null);
-            Logger.debug("Finished page:"+page.getTitle());
+
+                boolean firstTime = true;
+                Logger.debug("Started:"+page.getTitle()+"  " );
+                try{
+                    do{
+                        if(!firstTime){
+                            try{
+                                posts = facebook.feedOperations().getPosts(page.getId(),posts.getNextPage());
+                            }catch (Exception e){
+                                Logger.debug("error on get more  posts: "+e.getMessage() +" - Trying again.");
+                                posts = facebook.feedOperations().getPosts(page.getId(),posts.getNextPage());
+
+                            }
+                        }
+                        firstTime = false;
+                        for(Post post: posts) {
+                            try{
+
+                                Set<User> users = new HashSet<>();
+                                Set<Comment> comments = new HashSet<>();
+                                try{
+
+                                    fetchCommentAndUpdateUsers(post, comments, users, page);
+                                    fetchLikesAndUpdateUsers(post, users,page);
+
+                                }catch (Exception e){
+                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
+                                    fetchCommentAndUpdateUsers(post, comments, users, page);
+                                    fetchLikesAndUpdateUsers(post, users,page);
+                                }
+
+                                MongoService.save(post);
+
+                                for(Comment comment: comments){
+
+                                    MongoService.save(comment,page,post.getId());
+                                }
+                                //save or update users iterations
+                                MongoService.save(users);
+                            }catch (Exception e){
+                                Logger.debug("error , going to next post: "+e.getMessage());
+                            }
+
+                        }
+                        
+                        Logger.debug("update:"+page.getTitle()+"  " );
+                    }while(posts.getNextPage()!=null);
+                }catch (Exception e){
+                    Logger.debug("error , going to next page: "+e.getMessage());
+                }
+                Logger.debug("Finished page:"+page.getTitle());
 
             }catch (Exception e){
                 Logger.debug("error on page:"+page.getTitle());
