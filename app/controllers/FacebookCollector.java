@@ -85,14 +85,7 @@ public class FacebookCollector {
 
                                 Set<User> users = new HashSet<>();
                                 Set<Comment> comments = new HashSet<>();
-                                try{
-
-                                    fetchCommentAndUpdateUsers(post, comments, users, page);
-
-                                }catch (Exception e){
-                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
-                                    fetchCommentAndUpdateUsers(post, comments, users, page);
-                                }
+                                
                                 try{
 
                                     fetchLikesAndUpdateUsers(post, users,page);
@@ -101,7 +94,14 @@ public class FacebookCollector {
                                     Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
                                     fetchLikesAndUpdateUsers(post, users,page);
                                 }
+                                try{
 
+                                    fetchCommentAndUpdateUsers(post, comments, users, page);
+
+                                }catch (Exception e){
+                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
+                                    fetchCommentAndUpdateUsers(post, comments, users, page);
+                                }
                                 MongoService.save(post);
 
                                 for(Comment comment: comments){
