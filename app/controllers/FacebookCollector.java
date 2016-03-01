@@ -88,11 +88,17 @@ public class FacebookCollector {
                                 try{
 
                                     fetchCommentAndUpdateUsers(post, comments, users, page);
-                                    fetchLikesAndUpdateUsers(post, users,page);
 
                                 }catch (Exception e){
                                     Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
                                     fetchCommentAndUpdateUsers(post, comments, users, page);
+                                }
+                                try{
+
+                                    fetchLikesAndUpdateUsers(post, users,page);
+
+                                }catch (Exception e){
+                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
                                     fetchLikesAndUpdateUsers(post, users,page);
                                 }
 
