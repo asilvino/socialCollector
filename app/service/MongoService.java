@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceOptions;
 import  org.springframework.data.mongodb.core.script.*;
@@ -246,6 +245,7 @@ public class MongoService {
         int skip = (page - 1) * limit;
         query.limit(limit);
         query.skip(skip);
+        Criteria criteriabasic = Criteria.where("likesCount").gte(10);
         Criteria criteriapages = Criteria.where(null);
         Criteria criterianame = Criteria.where(null);
         Criteria criteriaapi = Criteria.where(null);
@@ -313,6 +313,7 @@ public class MongoService {
         Aggregation agg = newAggregation(
             // unwind("likes"),
             // unwind("comments"),
+            match(criteriabasic),
             match(criteriapages),
             match(criterianame),
             match(criteriaapi),
@@ -336,7 +337,7 @@ public class MongoService {
 
     public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name){
         Query query = new Query();
-        
+        query.addCriteria(Criteria.where("likesCount").gte(10));
         if(pages!=null){
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
