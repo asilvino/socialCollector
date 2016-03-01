@@ -34,13 +34,13 @@ public class User {
     private  String api;
     private  String profilePic;
 
-    public  Set<Like> likes;
+    public  Set<Like> likes  = new HashSet<>();
     private int likesCount;
 
-    public  Set<Comment> comments;
+    public  Set<Comment> comments  = new HashSet<>();
     private int commentsCount;
 
-    private  Set<Page> pages;
+    private  Set<Page> pages  = new HashSet<>();
     private int pagesCount;
 
     public User(){

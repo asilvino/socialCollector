@@ -54,7 +54,6 @@ public class Global extends GlobalSettings {
            Akka.system().dispatcher(),
            null
         );
-*/
         Akka.system().scheduler().schedule(
             Duration.create(0, TimeUnit.HOURS), //Initial delay 0 milliseconds
             Duration.create(30, TimeUnit.HOURS),     //Frequency 30 minutes
@@ -63,6 +62,7 @@ public class Global extends GlobalSettings {
             Akka.system().dispatcher(),
             null
         );
+*/
 
         Logger.info("Application has started");
     }

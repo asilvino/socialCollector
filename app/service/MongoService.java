@@ -8,11 +8,24 @@ import org.joda.time.DateTime;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceOptions;
 import  org.springframework.data.mongodb.core.script.*;
 import controllers.InstagramCollector;
 import play.Logger;
+
+
+//imports as static
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
+
 
 import bootstrap.DS;
 import models.*;
@@ -230,8 +243,14 @@ public class MongoService {
     public static List<User> getUsers(int page,Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name) {
         Query query = new Query();
         int limit = 10;
+        int skip = (page - 1) * limit;
         query.limit(limit);
-        query.skip((page - 1) * limit);
+        query.skip(skip);
+        Criteria criteriapages = Criteria.where(null);
+        Criteria criterianame = Criteria.where(null);
+        Criteria criteriaapi = Criteria.where(null);
+        Criteria criteriadate = Criteria.where(null);
+        Criteria criteriasearchPost = Criteria.where(null);
         if (pages != null) {
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
@@ -242,16 +261,20 @@ public class MongoService {
                 }
             }
             query.addCriteria(Criteria.where("pages.title").all(pagesTitle));
+            criteriapages = Criteria.where("pages.title").all(pagesTitle);
         }
         if(name != null){
             query.addCriteria(Criteria.where("name").regex(name));
+            criterianame = Criteria.where("name").regex(name);
         }
         switch (api){
             case facebook:
                 query.addCriteria(Criteria.where("pages.api").is(Utils.FacebookPages.class.getName()));
+                criteriaapi = Criteria.where("pages.api").is(Utils.FacebookPages.class.getName());
                 break;
             case instagram:
                 query.addCriteria(Criteria.where("pages.api").is(Utils.InstagramPages.class.getName()));
+                criteriaapi = Criteria.where("pages.api").is(Utils.InstagramPages.class.getName());
                 break;
             default:
                 break;
@@ -263,20 +286,52 @@ public class MongoService {
                     Criteria.where(null).orOperator(Criteria.where("likes.postId").in(postIds),(Criteria.where("comments.postId").in(postIds))),
                     Criteria.where(null).orOperator(Criteria.where("likes.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()),
                     Criteria.where("comments.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()))));
+            criteriadate = Criteria.where(null).andOperator(
+                    Criteria.where(null).orOperator(Criteria.where("likes.postId").in(postIds),(Criteria.where("comments.postId").in(postIds))),
+                    Criteria.where(null).orOperator(Criteria.where("likes.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()),
+                    Criteria.where("comments.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate())));
         }else{
             if(initDateTime!=null&&endDateTime!=null){
                 query.addCriteria(Criteria.where(null).orOperator(Criteria.where("likes.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()),
-                        Criteria.where("comments.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate())));
+                Criteria.where("comments.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate())));
+
+                criteriadate = Criteria.where(null).orOperator(Criteria.where("likes.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()),
+                Criteria.where("comments.createdDate").lte(endDateTime.toDate()).gte(initDateTime.toDate()));
+        
             }
             if(searchPost!=null){
                 List<String> postIds = getPostByKeyword(searchPost);
                 query.addCriteria(Criteria.where(null).orOperator(Criteria.where("likes.postId").in(postIds),(Criteria.where("comments.postId").in(postIds))));
+                criteriasearchPost = Criteria.where(null).orOperator(Criteria.where("likes.postId").in(postIds),(Criteria.where("comments.postId").in(postIds)));
+        
             }
         }
-        query.with(new Sort(direction,order.name()));
+        //query.with(new Sort(direction,order.name()));
         query.fields().exclude("likes");
         query.fields().exclude("comments");
-        return DS.mop.find(query,User.class);
+
+        Aggregation agg = newAggregation(
+            // unwind("likes"),
+            // unwind("comments"),
+            match(criteriapages),
+            match(criterianame),
+            match(criteriaapi),
+            match(criteriadate),
+            match(criteriasearchPost),
+            sort(direction,order.name()),
+            project("_id","api","profilePic","commentsCount"
+                // ,"likes","comments"
+                ,"name","username"
+                ,"likesCount","pages","pagesCount"),
+            limit(limit),
+            skip(skip)
+        ).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+        //Convert the aggregation result into a List
+        AggregationResults<User> groupResults 
+            = DS.mop.aggregate( agg ,"user",User.class);
+        List<User> result = groupResults.getMappedResults();
+        return result;
+        //return DS.mop.find(query,User.class);
     }
 
     public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name){
