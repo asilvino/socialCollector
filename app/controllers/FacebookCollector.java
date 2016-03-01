@@ -91,21 +91,28 @@ public class FacebookCollector {
                                     fetchLikesAndUpdateUsers(post, users,page);
 
                                 }catch (Exception e){
-                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
-                                    fetchLikesAndUpdateUsers(post, users,page);
+                                    Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
+                                    try{
+                                        fetchLikesAndUpdateUsers(post, users,page);
+                                    }catch (Exception e){
+                                        Logger.debug("error on get Likes: "+e.getMessage() +" - Continue to Comments.");
+                                    }
                                 }
                                 try{
 
                                     fetchCommentAndUpdateUsers(post, comments, users, page);
 
                                 }catch (Exception e){
-                                    Logger.debug("error on get Comments and Likes: "+e.getMessage() +" - Trying again.");
-                                    fetchCommentAndUpdateUsers(post, comments, users, page);
+                                    Logger.debug("error on get Comments: "+e.getMessage() +" - Trying again.");
+                                    try{
+                                        fetchCommentAndUpdateUsers(post, comments, users, page);
+                                    }catch (Exception e){
+                                        Logger.debug("error on get Comments : "+e.getMessage() +" - Continue to next post.");
+                                    }
                                 }
                                 MongoService.save(post);
 
                                 for(Comment comment: comments){
-
                                     MongoService.save(comment,page,post.getId());
                                 }
                                 //save or update users iterations
