@@ -234,7 +234,7 @@ public class MongoService {
         if(post!=null){
             return true;
         }else{
-            return false
+            return false;
         }
     }
 
