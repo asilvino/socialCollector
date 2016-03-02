@@ -37,7 +37,7 @@ public class FacebookCollector {
 
     public static String token = Play.application().configuration().getString("facebook.token");
     public static Facebook facebook = new FacebookTemplate(token);
-
+    public static boolean updateAllPost = false;
 
     public static void collect(CollectorInfo.Moment moment){
         List<Page> pages = MongoService.getAllPagesFacebook();
@@ -82,50 +82,52 @@ public class FacebookCollector {
                         firstTime = false;
                         for(Post post: posts) {
                             try{
+                                if(!MongoService.existsPost(post.getId())||updateAllPost){
 
-                                Set<User> users = new HashSet<>();
-                                Set<Comment> comments = new HashSet<>();
-                                
-                                try{
-
-                                    fetchCommentAndUpdateUsers(post, comments, users, page);
-
-                                }catch (Exception e2){
-                                    Logger.debug("error on get Comments: "+e2.getMessage() +" - Trying again.");
+                                    Set<User> users = new HashSet<>();
+                                    Set<Comment> comments = new HashSet<>();
+                                    
                                     try{
+
                                         fetchCommentAndUpdateUsers(post, comments, users, page);
-                                    }catch (Exception e3){
-                                        Logger.debug("error on get Comments : "+e3.getMessage() +" - Continue to next post.");
+
+                                    }catch (Exception e2){
+                                        Logger.debug("error on get Comments: "+e2.getMessage() +" - Trying again.");
+                                        try{
+                                            fetchCommentAndUpdateUsers(post, comments, users, page);
+                                        }catch (Exception e3){
+                                            Logger.debug("error on get Comments : "+e3.getMessage() +" - Continue to next post.");
+                                        }
                                     }
-                                }
 
-                                try{
-
-                                    fetchLikesAndUpdateUsers(post, users,page);
-
-                                }catch (Exception e){
-                                    Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
                                     try{
+
                                         fetchLikesAndUpdateUsers(post, users,page);
-                                    }catch (Exception e1){
-                                        Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
+
+                                    }catch (Exception e){
+                                        Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
+                                        try{
+                                            fetchLikesAndUpdateUsers(post, users,page);
+                                        }catch (Exception e1){
+                                            Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
+                                        }
                                     }
-                                }
 
-                                
-                                MongoService.save(post);
+                                    
+                                    MongoService.save(post);
 
-                                for(Comment comment: comments){
-                                    MongoService.save(comment,page,post.getId());
+                                    for(Comment comment: comments){
+                                        MongoService.save(comment,page,post.getId());
+                                    }
+                                    //save or update users iterations
+                                    MongoService.save(users);
+                                }else{
+                                    Logger.debug("post - already in base + updateAllPost:"+ updateAllPost + "");
                                 }
-                                //save or update users iterations
-                                MongoService.save(users);
                             }catch (Exception e){
                                 Logger.debug("error , going to next post: "+e.getMessage());
                             }
-
                         }
-                        
                         Logger.debug("update:"+page.getTitle()+"  " );
                     }while(posts.getNextPage()!=null);
                 }catch (Exception e){

@@ -229,6 +229,14 @@ public class MongoService {
         facebook,instagram,none;
     }
 
+    public static boolean existsPost(String id){
+        Post post = DS.mop.findById(id,Post.class);
+        if(post!=null){
+            return true;
+        }else{
+            return false
+        }
+    }
 
     public static List<String> getPostByKeyword(String[] keyword){
         TextCriteria criteria = TextCriteria.forDefaultLanguage()
