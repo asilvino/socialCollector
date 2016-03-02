@@ -32,7 +32,10 @@ public class Post {
     private String name;
     private String from;
     private String message;
+
+    @Indexed
     private int likesCount;
+    @Indexed
     private int commentsCount;
     private int shareCount;
     private String api;

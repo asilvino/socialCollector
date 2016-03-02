@@ -74,7 +74,7 @@ public class FacebookCollector {
                             try{
                                 posts = facebook.feedOperations().getPosts(page.getId(),posts.getNextPage());
                             }catch (Exception e){
-                                Logger.debug("error on get more  posts: "+e.getMessage() +" - Trying again.");
+                                Logger.debug("FacebookCollector - error on get more  posts: "+e.getMessage() +" - Trying again.");
                                 posts = facebook.feedOperations().getPosts(page.getId(),posts.getNextPage());
 
                             }
@@ -83,6 +83,7 @@ public class FacebookCollector {
                         for(Post post: posts) {
                             try{
                                 if(!MongoService.existsPost(post.getId())||updateAllPost){
+                                    Logger.debug("FacebookCollector -  post - not in base + updateAllPost:"+ updateAllPost + "");
 
                                     Set<User> users = new HashSet<>();
                                     Set<Comment> comments = new HashSet<>();
@@ -92,12 +93,12 @@ public class FacebookCollector {
                                         fetchCommentAndUpdateUsers(post, comments, users, page);
 
                                     }catch (Exception e2){
-                                        Logger.debug("error on get Comments: "+e2.getMessage() +" - Trying again.");
-                                        try{
-                                            fetchCommentAndUpdateUsers(post, comments, users, page);
-                                        }catch (Exception e3){
-                                            Logger.debug("error on get Comments : "+e3.getMessage() +" - Continue to next post.");
-                                        }
+                                        Logger.debug("FacebookCollector -  error on get Comments: "+e2.getMessage() +" - not Trying again.");
+                                        // try{
+                                        //     fetchCommentAndUpdateUsers(post, comments, users, page);
+                                        // }catch (Exception e3){
+                                        //     Logger.debug("FacebookCollector -  error on get Comments : "+e3.getMessage() +" - Continue to next post.");
+                                        // }
                                     }
 
                                     try{
@@ -105,12 +106,12 @@ public class FacebookCollector {
                                         fetchLikesAndUpdateUsers(post, users,page);
 
                                     }catch (Exception e){
-                                        Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
-                                        try{
-                                            fetchLikesAndUpdateUsers(post, users,page);
-                                        }catch (Exception e1){
-                                            Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
-                                        }
+                                        Logger.debug("FacebookCollector - error on get Likes: "+e.getMessage() +" - not Trying again.");
+                                        // try{
+                                        //     fetchLikesAndUpdateUsers(post, users,page);
+                                        // }catch (Exception e1){
+                                        //     Logger.debug("FacebookCollector - error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
+                                        // }
                                     }
 
                                     
@@ -122,10 +123,10 @@ public class FacebookCollector {
                                     //save or update users iterations
                                     MongoService.save(users);
                                 }else{
-                                    Logger.debug("post - already in base + updateAllPost:"+ updateAllPost + "");
+                                    Logger.debug("FacebookCollector - post - already in base + updateAllPost:"+ updateAllPost + "");
                                 }
                             }catch (Exception e){
-                                Logger.debug("error , going to next post: "+e.getMessage());
+                                Logger.debug("FacebookCollector - error , going to next post: "+e.getMessage());
                             }
                         }
                         Logger.debug("update:"+page.getTitle()+"  " );
