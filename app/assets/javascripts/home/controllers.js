@@ -166,7 +166,7 @@ define([], function() {
 			});
 		};
 		
-		$scope.selectPages = function(page){
+		$scope.selectPages = function(pages){
 			var pagesIds = pages.map(function(page){return page.id;}).toString();
 			$location.search('pages',pagesIds);
 			$scope.query.page = 1;
