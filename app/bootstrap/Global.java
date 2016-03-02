@@ -71,11 +71,11 @@ public class Global extends GlobalSettings {
         try {
             if(!DS.mop.collectionExists("post")){
                 DS.mop.createCollection("post");
-                DBObject textIndex = new BasicDBObject("message", "text");
-                textIndex.put("link","text");
-                textIndex.put("name","text");
-                DS.mop.getCollection("post").createIndex(textIndex);
             }
+            DBObject textIndex = new BasicDBObject("message", "text");
+            textIndex.put("link","text");
+            textIndex.put("name","text");
+            DS.mop.getCollection("post").createIndex(textIndex);
         }catch (Exception e){
             Logger.debug("error on index post"+e.getMessage());
         }
@@ -84,10 +84,10 @@ public class Global extends GlobalSettings {
         try {
             if(!DS.mop.collectionExists("user")){
                 DS.mop.createCollection("user");
-                DBObject textIndex = new BasicDBObject("likes.potMessage", "text");
-                textIndex.put("comments.message","text");
-                DS.mop.getCollection("post").createIndex(textIndex);
             }
+            DBObject textIndex = new BasicDBObject("likes.postMessage", "text");
+            textIndex.put("comments.message","text");
+            DS.mop.getCollection("user").createIndex(textIndex);
         }catch (Exception e){
             Logger.debug("error on index User"+e.getMessage());
         }

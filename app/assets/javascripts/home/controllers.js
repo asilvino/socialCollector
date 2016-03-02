@@ -64,21 +64,19 @@ define([], function() {
 			var pagesIds = pages.map(function(page){return page.id;}).toString();
 			$location.search('pages',pagesIds);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
+			$scope.updateLocation();
 		};
 		
 		$scope.selectDate = function(date){
-			$location.search('date',date);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
 			$scope.query.date = date;
+			$scope.updateLocation();
 		};
 
 		$scope.selectApi = function(api){
-			$location.search('api',api);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
 			$scope.query.api = api;
+			$scope.updateLocation();
 		};
 
 
@@ -92,26 +90,32 @@ define([], function() {
 					$scope.query.direction='asc';
 			}
 			$scope.query.order = order;
-			$location.search('order',$scope.query.order);
-			$location.search('direction',$scope.query.direction);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
+			$scope.updateLocation();
 		};
         $scope.addkeyword = function(keyword){
             $scope.query.keyword = keyword;
-            $location.search('keyword',$scope.query.keyword);
             $scope.query.page = 1;
-            $location.search('page',$scope.query.page);
+			$scope.updateLocation();
         };
         $scope.addName = function(name){
             $scope.query.name = name;
-            $location.search('name',$scope.query.name);
             $scope.query.page = 1;
-            $location.search('page',$scope.query.page);
+			$scope.updateLocation();
         };
 		$scope.changePage = function(page){
 			$scope.query.page = page>0?page:1;
+			$scope.updateLocation();
+		};
+
+		$scope.updateLocation = function(){
 			$location.search('page',$scope.query.page);
+            $location.search('name',$scope.query.name);
+            $location.search('keyword',$scope.query.keyword);
+			$location.search('order',$scope.query.order);
+			$location.search('direction',$scope.query.direction);
+			$location.search('date',$scope.query.date);
+			$location.search('api',$scope.query.api);
 		};
 
 	};
@@ -167,14 +171,13 @@ define([], function() {
 			$scope.query.pages = page;
 			$location.search('pages',pagesIds);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
+			$scope.updateLocation();
 		};
 		
 		$scope.selectDate = function(date){
-			$location.search('date',date);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
 			$scope.query.date = date;
+			$scope.updateLocation();
 		};
 
 		$scope.selectOrder = function(order){
@@ -187,20 +190,24 @@ define([], function() {
 					$scope.query.direction='asc';
 			}
 			$scope.query.order = order;
-			$location.search('order',$scope.query.order);
-			$location.search('direction',$scope.query.direction);
 			$scope.query.page = 1;
-			$location.search('page',$scope.query.page);
+			$scope.updateLocation();
 		};
         $scope.addkeyword = function(keyword){
             $scope.query.keyword = keyword;
-            $location.search('keyword',$scope.query.keyword);
             $scope.query.page = 1;
-            $location.search('page',$scope.query.page);
+			$scope.updateLocation();
         };
 		$scope.changePage = function(page){
 			$scope.query.page = page>0?page:1;
+			$scope.updateLocation();
+		};
+		$scope.updateLocation = function(){
 			$location.search('page',$scope.query.page);
+            $location.search('keyword',$scope.query.keyword);
+			$location.search('order',$scope.query.order);
+			$location.search('direction',$scope.query.direction);
+			$location.search('date',$scope.query.date);
 		};
 
 	};
@@ -292,12 +299,13 @@ define([], function() {
 		$scope.query.date = $location.search().date||'';
 		$scope.query.pages = $location.search().pages;
 		$scope.selectDate = function(date){
-			$location.search('date',date);
 			$scope.query.date = date;
+			$scope.updateLocation();
 		};
 		$scope.selectPages = function(pages){
 			var pagesIds = pages.map(function(page){return page.id;}).toString();
 			$location.search('pages',pagesIds);
+			$scope.updateLocation();
 		};
 		Pages.query().$promise.then(function(response,error,callBack){
 			if($scope.query.pages){
@@ -319,6 +327,9 @@ define([], function() {
 			},function(reason){
 				console.log(reason);
 			});
+		};
+		$scope.updateLocation = function(){
+			$location.search('date',$scope.query.date);
 		};
 	};
 	PagesWordsCtrl.$inject = ['$scope', 'UserSearch', 'helper', '$location','$routeParams','WordsPages','Pages'];
