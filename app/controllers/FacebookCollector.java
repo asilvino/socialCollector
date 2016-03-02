@@ -37,7 +37,7 @@ public class FacebookCollector {
 
     public static String token = Play.application().configuration().getString("facebook.token");
     public static Facebook facebook = new FacebookTemplate(token);
-    public static boolean updateAllPost = false;
+    public static boolean updateAllPost = Play.application().configuration().getBoolean("updateAllPost");;
 
     public static void collect(CollectorInfo.Moment moment){
         List<Page> pages = MongoService.getAllPagesFacebook();
