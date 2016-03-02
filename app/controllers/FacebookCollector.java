@@ -56,7 +56,6 @@ public class FacebookCollector {
                 PagedList<Post> posts ;
                 switch (moment){
                     case ALL:
-                        //posts = facebook.feedOperations().getPosts(page.getId(),pagingParameters);
                         posts = facebook.feedOperations().getPosts(page.getId());
                         break;
                     case RECENT:
@@ -89,18 +88,6 @@ public class FacebookCollector {
                                 
                                 try{
 
-                                    fetchLikesAndUpdateUsers(post, users,page);
-
-                                }catch (Exception e){
-                                    Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
-                                    try{
-                                        fetchLikesAndUpdateUsers(post, users,page);
-                                    }catch (Exception e1){
-                                        Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
-                                    }
-                                }
-                                try{
-
                                     fetchCommentAndUpdateUsers(post, comments, users, page);
 
                                 }catch (Exception e2){
@@ -111,6 +98,21 @@ public class FacebookCollector {
                                         Logger.debug("error on get Comments : "+e3.getMessage() +" - Continue to next post.");
                                     }
                                 }
+
+                                try{
+
+                                    fetchLikesAndUpdateUsers(post, users,page);
+
+                                }catch (Exception e){
+                                    Logger.debug("error on get Likes: "+e.getMessage() +" - Trying again.");
+                                    try{
+                                        fetchLikesAndUpdateUsers(post, users,page);
+                                    }catch (Exception e1){
+                                        Logger.debug("error on get Likes: "+e1.getMessage() +" - Continue to Comments.");
+                                    }
+                                }
+
+                                
                                 MongoService.save(post);
 
                                 for(Comment comment: comments){
@@ -156,6 +158,10 @@ public class FacebookCollector {
                 User user = users.stream().filter(f->f.getId().equals(userLike.getId())).findFirst().orElse(new User(userLike.getId(),userLike.getName(),page));
                 user.addLike(post,page.getId());
                 users.add(user);
+                if(users.size()>1000){
+                    MongoService.save(users);
+                    users = new HashSet<>();
+                }
             }
         }
         post.getExtraData().putIfAbsent("likesCount",totalLikes);
@@ -194,6 +200,7 @@ public class FacebookCollector {
 
             }
         }
+
         while (comments.getNextPage() != null) {
             comments = facebook.commentOperations().getComments(post.getId(), comments.getNextPage());
             totalComments +=comments.size();
@@ -223,6 +230,14 @@ public class FacebookCollector {
                     }
                 }
             }
+
+            if(commentsToSave.size()>100){
+                for(Comment comment: commentsToSave){
+                    MongoService.save(comment,page,post.getId());
+                }
+                commentsToSave = new HashSet<>();
+            }
+
         }
         post.getExtraData().putIfAbsent("commentsCount",totalComments);
 

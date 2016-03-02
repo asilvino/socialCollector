@@ -245,6 +245,7 @@ public class MongoService {
         int skip = (page - 1) * limit;
         query.limit(limit);
         query.skip(skip);
+        // query.addCriteria(Criteria.where("likesCount").gte(10));
         Criteria criteriabasic = Criteria.where("likesCount").gte(10);
         Criteria criteriapages = Criteria.where(null);
         Criteria criterianame = Criteria.where(null);
@@ -337,7 +338,7 @@ public class MongoService {
 
     public static long countUsers(Api api, Sort.Direction direction, OrderBy order,List<String> pages,DateTime initDateTime,DateTime endDateTime,String[] searchPost,String name){
         Query query = new Query();
-        query.addCriteria(Criteria.where("likesCount").gte(10));
+        // query.addCriteria(Criteria.where("likesCount").gte(10));
         if(pages!=null){
             List<String> pagesTitle = new ArrayList<>();
             for (String id : pages) {
