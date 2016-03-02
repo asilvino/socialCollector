@@ -167,8 +167,7 @@ define([], function() {
 		};
 		
 		$scope.selectPages = function(page){
-			var pagesIds = page.id;
-			$scope.query.pages = page;
+			var pagesIds = pages.map(function(page){return page.id;}).toString();
 			$location.search('pages',pagesIds);
 			$scope.query.page = 1;
 			$scope.updateLocation();
