@@ -29,7 +29,9 @@ public class User {
     @Id
     private String id;
 
+    @Indexed
     private  String name;
+    @Indexed
     private  String username;
     private  String api;
     private  String profilePic;
