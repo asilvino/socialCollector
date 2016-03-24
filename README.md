@@ -1,4 +1,4 @@
-# Social Media Collector [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://github.com/alvarojoao/socialCollector)  [![Travis](https://img.shields.io/badge/Heroku-deploy-green.svg)](https://heroku.com/) 
+# Social Media Collector [![Travis](https://img.shields.io/teamcity/codebetter/bt428.svg)](https://github.com/alvarojoao/socialCollector)  [![Travis](https://img.shields.io/badge/Heroku-deploy-green.svg)](https://heroku.com/) 
 
 ##For now, only fully working for Facebook.
 
@@ -21,9 +21,9 @@ For front-end : **AngularJs**, **RequireJs**
  
 ##Configuring Social Pages:
 
-**Utils.java**
+**socialCollector/app/models/Utils.java**
 
-###Add Instagram Accounts
+###Add Instagram Accounts 
 
     public class Utils{
         public enum InstagramPages {
@@ -31,7 +31,7 @@ For front-end : **AngularJs**, **RequireJs**
             camiseteriasa("374614102"),
             kanuibr("196502375");
 
-###Add Facebook Pages
+###Add Facebook Pages 
 
      public enum FacebookPages {
           chicorei("162726143745402"),
@@ -43,7 +43,7 @@ For front-end : **AngularJs**, **RequireJs**
 
 ##Configuring Deploy:
 
-**conf/application.conf**
+**socialCollector/conf/application.conf**
 
 All the `${?}` variables are from system envoriment
 
