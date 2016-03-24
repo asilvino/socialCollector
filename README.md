@@ -21,7 +21,7 @@ For front-end : **AngularJs**, **RequireJs**
  
 ##Configuring Social Pages:
 
-**socialCollector/app/models/Utils.java**
+FILE:**socialCollector/app/models/Utils.java**
 
 ###Add Instagram Accounts 
 
@@ -43,7 +43,7 @@ For front-end : **AngularJs**, **RequireJs**
 
 ##Configuring Deploy:
 
-**socialCollector/conf/application.conf**
+FILE:**socialCollector/conf/application.conf**
 
 All the `${?}` variables are from system envoriment
 
