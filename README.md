@@ -28,12 +28,9 @@ For front-end : **AngularJs**, **RequireJs**
 
  4. Configure the file **socialCollector/app/models/Utils.java** and **socialCollector/conf/application.conf** as fallows:
  
- 
-
-
 **Configuring Social Page** -  FILE:**socialCollector/app/models/Utils.java**
 
-**Add Instagram Accounts **
+*Add Instagram Accounts *
 
     public class Utils{
         public enum InstagramPages {
@@ -41,7 +38,7 @@ For front-end : **AngularJs**, **RequireJs**
             camiseteriasa("374614102"),
             kanuibr("196502375");
 
-**Add Facebook Pages **
+*Add Facebook Pages *
 
      public enum FacebookPages {
           chicorei("162726143745402"),
@@ -73,7 +70,7 @@ If you want to use a **local database** change to:
          slave = false #slave or not
          servers = ["127.0.0.1:27017"] #local servers
        }
-            }
+    }
 
 However, if You want to configure the **production environment** scenario change to:
 
@@ -96,7 +93,7 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
        instagram.url.auth = ${?INSTAGRAM_URL_AUTH}
  
  
- 5. Go to console, navegate to the project's root and type:
+ 5. Go to console (prompt), navegate to the project's root and type:
  
 >  `> activator run ` #will install the dependencies and the run the project (usually port :9000)
 
