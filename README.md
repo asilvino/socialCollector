@@ -29,11 +29,11 @@ For front-end : **AngularJs**, **RequireJs**
  4. Configure the file **socialCollector/app/models/Utils.java** and **socialCollector/conf/application.conf** as fallows:
  
  
-##Configuring Social Pages:
 
-FILE:**socialCollector/app/models/Utils.java**
 
-###Add Instagram Accounts 
+**Configuring Social Page** -  FILE:**socialCollector/app/models/Utils.java**
+
+**Add Instagram Accounts **
 
     public class Utils{
         public enum InstagramPages {
@@ -41,7 +41,7 @@ FILE:**socialCollector/app/models/Utils.java**
             camiseteriasa("374614102"),
             kanuibr("196502375");
 
-###Add Facebook Pages 
+**Add Facebook Pages **
 
      public enum FacebookPages {
           chicorei("162726143745402"),
@@ -51,9 +51,9 @@ FILE:**socialCollector/app/models/Utils.java**
           camiseteria("7018060973"),
           kanuibr("197061883680740");
 
-##Configuring Deploy:
 
-FILE:**socialCollector/conf/application.conf**
+
+**Configuring .conf (connect database, facebook token, etc)** FILE:**socialCollector/conf/application.conf**
 
 All the `${?}` variables are from system envoriment
 
@@ -61,7 +61,26 @@ Add a new security key:
 
     play.crypto.secret = ${?SECRET}
 
+If you want to use a **local database** change to:
+
+    mongo.config = "bootstrap.MongoConf"
+    
+ And configure the local connection:
+ 
+    connections {
+       mongo{
+         name = "social" #name of the database
+         slave = false #slave or not
+         servers = ["127.0.0.1:27017"] #local servers
+       }
+            }
+
+However, if You want to configure the **production environment** scenario change to:
+
+    mongo.config = "bootstrap.MongoConfig"
+    
 Add a Mongodb URI:
+
      mongo_uri = ${?MONGOLAB_URI}
 
 Add a **Long-term (Long-life)** Facebook Token, more information [here] (https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension)
@@ -79,7 +98,7 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
  
  5. Go to console, navegate to the project's root and type:
  
->  `> activator run `
+>  `> activator run ` #will install the dependencies and the run the project (usually port :9000)
 
 
 
