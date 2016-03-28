@@ -30,7 +30,7 @@ For front-end : **AngularJs**, **RequireJs**
  
 **Configuring Social Page** -  FILE:**socialCollector/app/models/Utils.java**
 
-*Add Instagram Accounts *
+*Add Instagram Accounts*
 
     public class Utils{
         public enum InstagramPages {
@@ -38,7 +38,7 @@ For front-end : **AngularJs**, **RequireJs**
             camiseteriasa("374614102"),
             kanuibr("196502375");
 
-*Add Facebook Pages *
+*Add Facebook Pages*
 
      public enum FacebookPages {
           chicorei("162726143745402"),
@@ -52,9 +52,9 @@ For front-end : **AngularJs**, **RequireJs**
 
 **Configuring .conf (connect database, facebook token, etc)** FILE:**socialCollector/conf/application.conf**
 
-All the `${?}` variables are from system envoriment
+All the `${?}` variables are from system envoriment, more [here](https://www.playframework.com/documentation/2.5.x/ProductionConfiguration) you can remove than and add the string independently the OS. 
 
-Add a new security key:
+Add a new *security key*:
 
     play.crypto.secret = ${?SECRET}
 
@@ -62,7 +62,7 @@ If you want to use a **local database** change to:
 
     mongo.config = "bootstrap.MongoConf"
     
- And configure the local connection:
+ And configure the *local* connection:
  
     connections {
        mongo{
