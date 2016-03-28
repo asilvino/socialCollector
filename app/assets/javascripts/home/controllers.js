@@ -287,6 +287,7 @@ define([], function() {
 	/** Controls the FB/INSTA - Pages Words page */
 	var PagesWordsCtrl = function($scope, UserSearch, helper, $location,$routeParams,WordsPages,Pages) {
 		// Wrap the current user from the service in a watch expression
+		$scope.errors=[];
 		$scope.user = {};
 		$scope.apiUrl={};
 		$scope.apiUrl['models.Utils$FacebookPages']='http://facebook.com/';
@@ -315,6 +316,7 @@ define([], function() {
 			$scope.pages = response;
 		},function(reason){
 			console.log(reason);
+			
 		});
 		
 		$scope.updateTable = function(){
@@ -325,6 +327,7 @@ define([], function() {
 				$scope.totalComments = Object.keys($scope.wordsComments).length;
 			},function(reason){
 				console.log(reason);
+				errors.push("Erro na requisição: /pages/words")
 			});
 		};
 		$scope.updateLocation = function(){
