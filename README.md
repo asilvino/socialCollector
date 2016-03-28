@@ -78,7 +78,8 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
  
  
  5. Go to console, navegate to the project's root and type:
- >  `> activator run `
+ 
+>  `> activator run `
 
 
 
