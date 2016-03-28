@@ -95,8 +95,9 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
  
  
  5. Go to console (prompt), navegate to the project's root and type:
- 
->  `> activator run ` #will install the dependencies and the run the project (usually port :9000)
+
+ ` #will install the dependencies and the run the project (usually port :9000)`
+>  `> activator run `
 
 
 
