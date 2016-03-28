@@ -52,7 +52,8 @@ For front-end : **AngularJs**, **RequireJs**
 
 **Configuring .conf (connect database, facebook token, etc)** FILE:**socialCollector/conf/application.conf**
 
-All the `${?}` variables are from system envoriment, more [here](https://www.playframework.com/documentation/2.5.x/ProductionConfiguration) you can remove than and add the string independently the OS. 
+All the `${?}` variables are from system envoriment, more [here](https://www.playframework.com/documentation/2.5.x/ProductionConfiguration).
+You can remove than and add the string independently the OS or anyother variables. 
 
 Add a new *security key*:
 
