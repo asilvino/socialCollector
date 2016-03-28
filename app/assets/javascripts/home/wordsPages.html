@@ -60,6 +60,9 @@
             </div>
           </div><!-- /.content-wrapper -->
         </section><!-- /.content -->
+        <section class="content" ng-repeat="error in errors">
+            <span class="label label-danger" ng-bind="error"></span>
+        </section>
         <section class="content" ng-init="updateTable()">
           <div class="row">
             <div class="col-xs-6">
