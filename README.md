@@ -24,9 +24,10 @@ For front-end : **AngularJs**, **RequireJs**
 
  1. Install [PlayFramework](https://www.playframework.com/documentation/2.5.x/Installing)
  2. Install [MongoDB](https://docs.mongodb.org/manual/installation/)
- 3. Go to Root project (where **activator** file is located)
+ 3. Run your mongodb server, more info [here](https://docs.mongodb.org/manual/tutorial/manage-mongodb-processes/)
+ 4. Go to Root project (where **activator** file is located)
 
- 4. Configure the file **socialCollector/app/models/Utils.java** and **socialCollector/conf/application.conf** as fallows:
+ 5. Configure the file **socialCollector/app/models/Utils.java** and **socialCollector/conf/application.conf** as fallows:
  
 **Configuring Social Page** -  FILE:**socialCollector/app/models/Utils.java**
 
@@ -93,8 +94,8 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
        instagram.token = ${?INSTAGRAM_TOKEN}
        instagram.url.auth = ${?INSTAGRAM_URL_AUTH}
  
- 
- 5. Go to console (prompt), navegate to the project's root and type:
+
+6 . Go to console (prompt), navegate to the project's root and type:
 
  ` #will install the dependencies and the run the project (usually port :9000)`
 >  `> activator run `
