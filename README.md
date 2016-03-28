@@ -5,6 +5,7 @@
 This project uses **Spring Social Resource**, **Spring Mongodb** and **Play Framework** with **JAVA 8**.
 
 For front-end : **AngularJs**, **RequireJs**
+
  
  This project will collect Users, Posts and Comments, Cross Users throw Pages, and Interest, for instance, you will be able to see what Pages/Accounts share commun Users or even that Users share interest.
  
@@ -18,6 +19,15 @@ For front-end : **AngularJs**, **RequireJs**
  - Evaluate Pages' Posts, count most liked posts, count most commented Posts
  - Filter Pages' Posts by date, pages, key words
  - Search for most cited words by Users and By Pages (new)
+ 
+##Steps to Use
+
+ 1. Install [PlayFramework](https://www.playframework.com/documentation/2.5.x/Installing)
+ 2. Install [MongoDB](https://docs.mongodb.org/manual/installation/)
+ 3. Go to Root project (where **activator** file is located)
+
+ 4. Configure the file **socialCollector/app/models/Utils.java** and **socialCollector/conf/application.conf** as fallows:
+ 
  
 ##Configuring Social Pages:
 
@@ -67,7 +77,8 @@ Add a **Long-term (Long-life)** Facebook Token, more information [here] (https:/
        instagram.url.auth = ${?INSTAGRAM_URL_AUTH}
  
  
-
+ 5. Go to console, navegate to the project's root and type:
+ >  `> activator run `
 
 
 
